@@ -1,10 +1,10 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 products = Blueprint('products', __name__)
 
 @products.route('/')
 def home():
-    return 'Hello world'
+    return render_template('index.html')
 
 @products.route('/add_products')
 def add_product():
