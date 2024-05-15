@@ -1,6 +1,6 @@
 # Crear env
 
-python -m venv env
+python3 -m venv env
 
 # activar env
 
@@ -13,3 +13,19 @@ pip freeze > requirements.txt
 # instalar requirements
 
 pip install -r requirements.txt
+
+
+
+
+# Instalar XAMPP
+
+https://inteligentedigital.com/como-instalar-xampp-en-ubuntu-22-04-paso-a-paso/
+
+https://www.apachefriends.org/es/index.html
+
+https://www.apachefriends.org/es/faq_linux.html
+
+# Iniciar XAMPP
+
+$ cd /opt/lampp
+$ sudo ./manager-linux-x64.run
