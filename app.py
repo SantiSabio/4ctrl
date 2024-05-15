@@ -1,11 +1,22 @@
 from flask import Flask
-from routes.products import products
 from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:@localhost/productsdb"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # Configuración de la base de datos
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost/productsdb'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.register_blueprint(products)
+    # Inicialización de la base de datos
+    db.init_app(app)
+
+    # Registro de los blueprints
+    from routes.products import products
+    app.register_blueprint(products)
+
+    app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
+    
+    return app
