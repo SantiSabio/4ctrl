@@ -34,7 +34,7 @@ def edit_product(id):
     return render_template('edit-product.html', product=product)
 
 
-@products.route('/delete/<int:id>', methods=['POST'])
+@products.route('/delete/<int:id>', methods=['GET'])
 def delete_product(id):
     product = Productos.query.get_or_404(id)
     db.session.delete(product)
