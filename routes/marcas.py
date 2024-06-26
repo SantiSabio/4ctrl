@@ -36,7 +36,7 @@ def add_marca():
             nueva_marca = Marca(nombre=nombre, cant_art=cant)
             db.session.add(nueva_marca)
             db.session.commit()
-            flash('Marca agregada con éxito')
+            flash('Marca agregada con exito')
             return redirect(url_for('marcas.ver_marcas'))
     return render_template('add_marca.html')
 
@@ -45,10 +45,12 @@ def edit_marca(id):
     marca = Marca.query.get_or_404(id)
     if request.method == 'POST':
         nombre = request.form['nombre']
-        if check_marca(nombre):
+        cant_art= request.form['cant_art']
+        if check_marca(nombre,cant_art):
             marca.nombre = nombre
+            marca.cant_art= int(cant_art)
             db.session.commit()
-            flash('Marca actualizada con éxito')
+            flash('Marca actualizada con exito')
             return redirect(url_for('marcas.ver_marcas'))
     return render_template('edit_marca.html', marca=marca)
 
@@ -57,5 +59,5 @@ def delete_marca(id):
     marca = Marca.query.get_or_404(id)
     db.session.delete(marca)
     db.session.commit()
-    flash('Marca eliminada con éxito')
+    flash('Marca eliminada con exito')
     return redirect(url_for('marcas.ver_marcas'))
