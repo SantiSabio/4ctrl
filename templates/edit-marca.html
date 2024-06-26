@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Editar Producto</title>
+    <title>Editar Marca</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,12 +34,10 @@
     </style>
 </head>
 <body>
-    <form action="/edit/{{ product.id }}" method="POST">
+    <form action="/edit_marca/{{ product.id }}" method="POST">
         <input type="text" name="nombre" placeholder="Nombre" value="{{ nombre|default(product.nombre) }}">
-        <input type="text" name="marca" placeholder="Marca" value="{{ marca|default(product.marca) }}">
-        <input type="text" name="precio" placeholder="Precio" value="{{ precio|default(product.precio) }}">
+        <input type="text" name="cant_art" placeholder="Cant_Art" value="{{ cant_art|default(product.marca) }}">
         <button type="submit">Guardar</button>
     </form>
 </body>
 </html>
-

@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lista de Productos</title>
+    <title>Home Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
         }
         form {
             display: flex;
@@ -21,9 +25,9 @@
             font-size: 16px;
         }
         button {
-            padding: 10px;
+            padding: 10px 20px;
             font-size: 16px;
-            background-color: #4CAF50;
+            background-color: #a04419;
             color: white;
             border: none;
             cursor: pointer;
@@ -31,57 +35,106 @@
         button:hover {
             background-color: #45a049;
         }
+        .flash-message {
+            color: red;
+            text-align: center;
+        }
         table {
-            margin: 20px auto;
-            width: 80%;
+            width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
-            padding: 15px;
+            padding: 12px 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-        tr:hover {background-color: #f5f5f5;}
+        th {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <p>{{ message }}</p>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <p class="flash-message">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    <form action="/add_products" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre">
-        <input type="text" name="marca" placeholder="Marca">
-        <input type="text" name="precio" placeholder="Precio">
-        <button type="submit">Guardar</button>
-    </form>
+        <form id="product-form" action="{{ url_for('products.add_product') }}" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="marca" id="marca" list="marcas" placeholder="Marca" required>
+            <datalist id="marcas">
+            <!-- Aquí se cargarán las opciones de marca desde la base de datos -->
+            </datalist>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Marca</th>
-                <th>Precio</th>
-                <th>Operaciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for producto in productos %}
-            <tr>
-                <td>{{ producto.nombre }}</td>
-                <td>{{ producto.marca }}</td>
-                <td>{{ producto.precio }}</td>
-                <td>
-                    <a href="/edit/{{ producto.id }}">Editar</a>
-                    <a href="/delete/{{ producto.id }}">Eliminar</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </select>
+            
+            <input type="text" name="precio" placeholder="Precio" required>
+            <button type="submit">Agregar Producto</button>
+        </form>
+
+
+        <form action="{{ url_for('marcas.ver_marcas') }}" method="GET">
+            <button type="submit">Ver Marcas</button>
+        </form>
+
+        <!-- Lista de productos -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.marca }}</td>
+                    <td>{{ producto.precio }}</td>
+                    <td>
+                        <a href="/edit/{{ producto.id }}">Editar</a>
+                        <a href="/delete/{{ producto.id }}">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
+
+<script>
+// Obtener el campo de marca
+const marcaInput = document.getElementById('marca');
+const marcasDatalist = document.getElementById('marcas');
+
+// Agregar evento de entrada al campo de marca
+marcaInput.addEventListener('input', function() {
+    // Obtener el valor actual del campo de marca
+    const marcaValue = this.value;
+
+    // Realizar una solicitud AJAX para obtener las marcas que coinciden
+    fetch('/get_marcas?q=' + encodeURIComponent(marcaValue))
+        .then(response => response.json())
+        .then(data => {
+            // Limpiar las opciones anteriores
+            marcasDatalist.innerHTML = '';
+
+            // Agregar las nuevas opciones
+            data.forEach(marca => {
+                const option = document.createElement('option');
+                option.value = marca.nombre;
+                marcasDatalist.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener las marcas:', error);
+        });
+});
+</script>
