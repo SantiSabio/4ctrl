@@ -6,26 +6,14 @@ python3 -m venv env
 
 source env/bin/activate
 
-# copiar requirements
-
-pip freeze > requirements.txt
-
 # instalar requirements
 
 pip install -r requirements.txt
 
+# para copiar requirements 'pip freeze > requirements.txt'
 
+# migrate
 
-
-# Instalar XAMPP
-
-https://inteligentedigital.com/como-instalar-xampp-en-ubuntu-22-04-paso-a-paso/
-
-https://www.apachefriends.org/es/index.html
-
-https://www.apachefriends.org/es/faq_linux.html
-
-# Iniciar XAMPP
-
-$ cd /opt/lampp
-$ sudo ./manager-linux-x64.run
+flask db init
+flask db migrate -m "Create Products and Marca tables"
+flask db upgrade
