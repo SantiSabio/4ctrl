@@ -55,11 +55,6 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(updated_marca.nombre, 'Marca Actualizada')
         self.assertEqual(updated_marca.cant_art, 6)
 
-
-
-
-        
-
     def test_delete_marca(self):
         marca = Marca(nombre='Marca a Eliminar', cant_art=5)
         db.session.add(marca)
