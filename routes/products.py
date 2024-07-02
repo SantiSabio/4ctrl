@@ -10,9 +10,6 @@ def get_marcas():
     marcas = Marca.query.filter(Marca.nombre.ilike(f'%{query}%')).all()
     return jsonify([{'nombre': marca.nombre} for marca in marcas])
 
-
-
-
 def check(nombre, marca, precio):
     if not isinstance(nombre, str) or not nombre.strip():
         flash('El nombre debe ser un string no vacío')
@@ -43,6 +40,7 @@ def login():
         else:
             return render_template("login.html", error='Contraseña incorrecta')
     return render_template("login.html")
+
 
 @products.route('/home')
 def home():
@@ -78,6 +76,7 @@ def add_product():
     marcas = Marca.query.all()
     return render_template('index.html', marcas=marcas)
 
+
 @products.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
     product = Productos.query.get_or_404(id)
@@ -103,6 +102,7 @@ def edit_product(id):
             return render_template('edit-product.html', product=product, nombre=nombre, marca=marca, precio=precio)
 
     return render_template('edit-product.html', product=product)
+
 
 @products.route('/delete/<int:id>', methods=['GET'])
 def delete_product(id):
