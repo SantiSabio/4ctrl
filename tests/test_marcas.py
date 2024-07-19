@@ -1,7 +1,7 @@
 import unittest
 from flask import Flask, url_for
 from app import create_app
-from models.tables import Marca
+from models.tables import Marcas
 from utils.db import db
 
 class MarcasTestCase(unittest.TestCase):

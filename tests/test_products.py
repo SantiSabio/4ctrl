@@ -41,15 +41,15 @@ class ProductTestCase(unittest.TestCase):
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
-    def test_edit_marca(self):
-        product = Productos(nombre='Productos Original', cant_art=5)
+    def test_edit_product(self):
+        product = Productos(nombre='Productos Original', marca='pichicho')
         db.session.add(product)
         db.session.commit()
-        marca_id= product.id
+        product_id= product.id
 
-        response = self.client.post(f'/marcas/edit-product/{product.id}', data={'nombre': 'Productos Actualizada','cant_art': 6}, follow_redirects=True)
+        response = self.client.post(f'/edit/{product.id}', data={'nombre': 'Productos Actualizada','cant_art': 6}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        updated_product=Productos.query.get(marca_id)
+        updated_product=Productos.query.get(product_id)
         self.assertIsNotNone(updated_product)
 
         self.assertEqual(updated_product.nombre, 'Productos Actualizada')
