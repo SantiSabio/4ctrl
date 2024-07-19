@@ -20,7 +20,7 @@ class MarcasTestCase(unittest.TestCase):
     #   self.app_context.pop()
 
     def test_ver_marcas(self):
-        response = self.client.get('/marcas/')
+        response = self.client.get('/marcas/')  
         self.assertEqual(response.status_code, 200)
 
     def test_add_marca_get(self):
@@ -28,11 +28,26 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_add_marca_post_valid(self):
+        # Enviar solicitud POST para agregar una nueva marca
         response = self.client.post('/marcas/add-marca', data={
-            'nombre': 'Nueva Marcas',
+            'nombre': 'Nueva Marca',  # Asegúrate de que el nombre sea consistente
             'cant_art': '5'
         }, follow_redirects=True)
+        
+        # Verifica que la respuesta sea 200 OK
         self.assertEqual(response.status_code, 200)
+        
+        # Verifica que la marca se haya agregado correctamente a la base de datos
+        added_marca = Marcas.query.filter_by(nombre='Nueva Marca').first()  # Asegúrate de que la consulta sea correcta
+        self.assertIsNotNone(added_marca)
+        self.assertEqual(added_marca.cant_art, 5)  # Comparar con entero ya que 'cant_art' es un número
+        self.assertEqual(added_marca.nombre, 'Nueva Marca')  # Verifica el nombre correctamente
+        
+        # Eliminar la marca agregada para limpiar la base de datos
+        db.session.delete(added_marca)
+        db.session.commit()
+
+
 
     def test_add_marca_post_invalid(self):
         response = self.client.post('/marcas/add-marca', data={
@@ -54,6 +69,10 @@ class MarcasTestCase(unittest.TestCase):
 
         self.assertEqual(updated_marca.nombre, 'Marcas Actualizada')
         self.assertEqual(updated_marca.cant_art, 6)
+
+        db.session.delete(updated_marca)
+        db.session.commit()
+
 
     def test_delete_marca(self):
         marca = Marcas(nombre='Marcas a Eliminar', cant_art=5)

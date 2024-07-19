@@ -27,37 +27,62 @@ class ProductTestCase(unittest.TestCase):
         response = self.client.get('/add_products')
         self.assertEqual(response.status_code, 200)
 
-    def test_add_marca_post_valid(self):
-        response = self.client.post('/marcas/add-product', data={
-            'nombre': 'Nueva Productos',
-            'cant_art': '5'
+    def test_add_product_post_valid(self):
+        # Asegúrate de que la ruta sea '/add_products' y no '/marcas/add-product'
+        response = self.client.post('/add_products', data={
+            'nombre': 'Nuevo Producto',
+            'precio': '5.00',  # Asegúrate de que el tipo de dato coincida con el modelo
+            'marca': 'Nueva Marcas'
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
-    def test_add_marca_post_invalid(self):
-        response = self.client.post('/marcas/add-product', data={
-            'nombre': '',
-            'cant_art': 'no es un número'
+        # Verifica que el producto se haya agregado correctamente a la base de datos
+        added_product = Productos.query.filter_by(nombre='Nuevo Producto').first()
+        self.assertIsNotNone(added_product)
+        self.assertEqual(added_product.precio, 5.00)
+        self.assertEqual(added_product.marca, 'Nueva Marcas')
+
+        db.session.delete(added_product)
+        db.session.commit()
+
+
+    def test_add_product_post_invalid(self):
+        # Enviar datos inválidos
+        response = self.client.post('/add_products', data={
+            'nombre': '',  # Nombre vacío
+            'precio': 'no es un número',  # Precio no válido
+            'marca': 'Nueva Marcas'  # Marca válida para asegurar que la validación de marca no sea el problema
         }, follow_redirects=True)
+        
+        # Verifica que la respuesta sea la esperada, normalmente una página de error o el mismo formulario
         self.assertEqual(response.status_code, 200)
+
+        # Verifica que el producto no se haya agregado a la base de datos
+        added_product = Productos.query.filter_by(nombre='').first()
+        self.assertIsNone(added_product)
+
         
     def test_edit_product(self):
-        product = Productos(nombre='Productos Original', marca='pichicho')
+        product = Productos(nombre='Productos Original',precio=5 ,marca='Nueva Marcas')
         db.session.add(product)
         db.session.commit()
         product_id= product.id
 
-        response = self.client.post(f'/edit/{product.id}', data={'nombre': 'Productos Actualizada','cant_art': 6}, follow_redirects=True)
+        response = self.client.post(f'/edit/{product.id}', data={'nombre': 'Productos Actualizada','precio': 6, 'marca':'Nueva Marcas'}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         updated_product=Productos.query.get(product_id)
         self.assertIsNotNone(updated_product)
 
         self.assertEqual(updated_product.nombre, 'Productos Actualizada')
-        self.assertEqual(updated_product.cant_art, 6)
+        self.assertEqual(updated_product.precio, 6)
+
+        db.session.delete(updated_product)
+        db.session.commit()
+
     
 
     def test_delete_product(self):
-        product = Productos(nombre='Productos a Eliminar',)
+        product = Productos(nombre='Productos a Eliminar',precio=500,marca='Nueva Marcas')
         db.session.add(product)
         db.session.commit()
 
