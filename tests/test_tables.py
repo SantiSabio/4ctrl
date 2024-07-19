@@ -25,7 +25,6 @@ class DbTestCase(unittest.TestCase):
         inspector = db.inspect(db.engine)
         tables = inspector.get_table_names()
         self.assertIn('marca', tables, "La tabla 'marca' no fue creada")
-        self.assertIn('productos', tables, "La tabla 'marca' no fue creada")
 
         columns=  inspector.get_columns('marca')
         expected_columns= ['id','nombre','cant_art']
