@@ -1,6 +1,6 @@
 # routes/marcas.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.tables import Marcas
+from models.tables import Marcas,Productos
 from utils.db import db
 
 marcas = Blueprint('marcas', __name__)
@@ -61,3 +61,12 @@ def delete_marca(id):
     db.session.commit()
     flash('Marcas eliminada con exito')
     return redirect(url_for('marcas.ver_marcas'))
+
+
+@marcas.route('/lista-de-productos/<string:marca_nombre>', methods=['GET'])
+def listar_productos(marca_nombre):
+    # Fetch the brand by name
+    marcap = Marcas.query.filter_by(nombre=marca_nombre).first_or_404()  # Use filter_by for name
+    # Fetch products associated with the brand
+    productosp = Productos.query.filter_by(marca=marcap.nombre).all()  # Use the Marcas object to filter products
+    return render_template('lista-de-productos.html', marca=marcap, productos=productosp)

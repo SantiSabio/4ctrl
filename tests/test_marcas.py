@@ -1,8 +1,8 @@
 import unittest
-from flask import Flask, url_for
 from app import create_app
-from models.tables import Marcas
+from models.tables import Marcas, Productos
 from utils.db import db
+
 
 class MarcasTestCase(unittest.TestCase):
     def setUp(self):
@@ -38,7 +38,7 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca se haya agregado correctamente a la base de datos
-        added_marca = Marcas.query.filter_by(nombre='Nueva Marca').first()  # Asegúrate de que la consulta sea correcta
+        added_marca = db.session.execute(db.select(Marcas).filter_by(nombre='Nueva Marca')).scalar_one_or_none()  # Asegúrate de que la consulta sea correcta
         self.assertIsNotNone(added_marca)
         self.assertEqual(added_marca.cant_art, 5)  # Comparar con entero ya que 'cant_art' es un número
         self.assertEqual(added_marca.nombre, 'Nueva Marca')  # Verifica el nombre correctamente
@@ -64,7 +64,7 @@ class MarcasTestCase(unittest.TestCase):
 
         response = self.client.post(f'/marcas/edit-marca/{marca.id}', data={'nombre': 'Marcas Actualizada','cant_art': 6}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        updated_marca=Marcas.query.get(marca_id)
+        updated_marca=db.session.get(Marcas,marca_id)
         self.assertIsNotNone(updated_marca)
 
         self.assertEqual(updated_marca.nombre, 'Marcas Actualizada')
@@ -84,8 +84,38 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca ya no existe en la base de datos
-        deleted_marca = Marcas.query.get(marca_id)
+        deleted_marca = db.session.execute(db.select(Marcas).filter_by(id=marca_id)).scalar_one_or_none()
         self.assertIsNone(deleted_marca)
+
+
+    def test_ver_productos(self):
+        # Setup test data
+        marca1 = Marcas(nombre='Marca de prueba', cant_art=5)
+        db.session.add(marca1)
+        db.session.commit()
+
+        producto1 = Productos(nombre='Prod1', precio=123,  marca=marca1.nombre)
+        producto2 = Productos(nombre='Prod2', precio=456,  marca=marca1.nombre)
+        db.session.add(producto1)
+        db.session.add(producto2)
+        db.session.commit()
+
+        # Make the request
+        response = self.client.get(f'/marcas/lista-de-productos/{marca1.nombre}', follow_redirects=True)
+
+        # Assert the response
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Lista de Productos por Marca', response.data)
+        self.assertIn(b'Prod1', response.data)  # Check for the presence of product names
+        self.assertIn(b'Prod2', response.data)
+
+        # Clean up the database
+        db.session.delete(producto1)
+        db.session.delete(producto2)
+        db.session.commit()
+        db.session.delete(marca1)
+        db.session.commit()  # Commit the deletion of the brand
+
 
 if __name__ == '__main__':
     unittest.main()
