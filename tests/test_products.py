@@ -14,10 +14,10 @@ class ProductTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+    #def tearDown(self):
+    #    db.session.remove()
+    #    db.drop_all()
+    #    self.app_context.pop()
 
     def test_ver_productos(self):
         response = self.client.get('/home')

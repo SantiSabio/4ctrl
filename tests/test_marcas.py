@@ -14,10 +14,10 @@ class MarcasTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+    #def tearDown(self):
+    #    db.session.remove()
+    #    db.drop_all()
+    #   self.app_context.pop()
 
     def test_ver_marcas(self):
         response = self.client.get('/marcas/')
@@ -29,7 +29,7 @@ class MarcasTestCase(unittest.TestCase):
 
     def test_add_marca_post_valid(self):
         response = self.client.post('/marcas/add-marca', data={
-            'nombre': 'Nueva Marca',
+            'nombre': 'Nueva Marcas',
             'cant_art': '5'
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
@@ -42,21 +42,21 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
     def test_edit_marca(self):
-        marca = Marca(nombre='Marca Original', cant_art=5)
+        marca = Marcas(nombre='Marcas Original', cant_art=5)
         db.session.add(marca)
         db.session.commit()
         marca_id= marca.id
 
-        response = self.client.post(f'/marcas/edit-marca/{marca.id}', data={'nombre': 'Marca Actualizada','cant_art': 6}, follow_redirects=True)
+        response = self.client.post(f'/marcas/edit-marca/{marca.id}', data={'nombre': 'Marcas Actualizada','cant_art': 6}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        updated_marca=Marca.query.get(marca_id)
+        updated_marca=Marcas.query.get(marca_id)
         self.assertIsNotNone(updated_marca)
 
-        self.assertEqual(updated_marca.nombre, 'Marca Actualizada')
+        self.assertEqual(updated_marca.nombre, 'Marcas Actualizada')
         self.assertEqual(updated_marca.cant_art, 6)
 
     def test_delete_marca(self):
-        marca = Marca(nombre='Marca a Eliminar', cant_art=5)
+        marca = Marcas(nombre='Marcas a Eliminar', cant_art=5)
         db.session.add(marca)
         db.session.commit()
 
@@ -65,7 +65,7 @@ class MarcasTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca ya no existe en la base de datos
-        deleted_marca = Marca.query.get(marca_id)
+        deleted_marca = Marcas.query.get(marca_id)
         self.assertIsNone(deleted_marca)
 
 if __name__ == '__main__':

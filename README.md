@@ -8,16 +8,8 @@ Este proyecto se trata de una aplicacion de gestin de stock a travez de bases de
 APLICACION CLIENTE SERVIDOR PARA PARCIAL EN JULIO
 
 
-
-
-PARTE MIGRATE
-
-flask db init
-flask db migrate -m "Create Productos and Marcas tables"
-flask db upgrade
-
-
 SQL
+
 CREATE TABLE productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
@@ -39,3 +31,10 @@ ALTER TABLE productos
 ADD COLUMN marca VARCHAR(100),
 ADD CONSTRAINT fk_marca
 FOREIGN KEY (marca) REFERENCES marcas(nombre);
+
+
+PARTE MIGRATE
+
+flask db init
+flask db migrate -m "Create Productos and Marcas tables"
+flask db upgrade

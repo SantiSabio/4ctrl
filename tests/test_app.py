@@ -11,8 +11,8 @@ class AppTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
 
-    def tearDown(self):
-        self.app_context.pop()
+    #def tearDown(self):
+    #    self.app_context.pop()
 
     def test_app(self):
         self.assertIsNotNone(current_app)
