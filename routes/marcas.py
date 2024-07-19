@@ -1,6 +1,6 @@
 # routes/marcas.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.tables import Marca
+from models.tables import Marcas
 from utils.db import db
 
 marcas = Blueprint('marcas', __name__)
@@ -24,7 +24,7 @@ def check_marca(nombre, cantidad):
 @marcas.route('/', methods=['GET'])
 def ver_marcas():
     
-    marcas = Marca.query.all()
+    marcas = Marcas.query.all()
     return render_template('marcas.html', marcas=marcas)
 
 @marcas.route('/add-marca', methods=['GET', 'POST'])
@@ -33,16 +33,16 @@ def add_marca():
         nombre = request.form['nombre']
         cant = request.form['cant_art']
         if check_marca(nombre, cant):
-            nueva_marca = Marca(nombre=nombre, cant_art=cant)
+            nueva_marca = Marcas(nombre=nombre, cant_art=cant)
             db.session.add(nueva_marca)
             db.session.commit()
-            flash('Marca agregada con exito')
+            flash('Marcas agregada con exito')
             return redirect(url_for('marcas.ver_marcas'))
     return render_template('add_marca.html')
 
 @marcas.route('/edit-marca/<int:id>', methods=['GET', 'POST'])
 def edit_marca(id):
-    marca = Marca.query.get_or_404(id)
+    marca = Marcas.query.get_or_404(id)
     if request.method == 'POST':
         nombre = request.form['nombre']
         cant_art= request.form['cant_art']
@@ -50,14 +50,14 @@ def edit_marca(id):
             marca.nombre = nombre
             marca.cant_art= int(cant_art)
             db.session.commit()
-            flash('Marca actualizada con exito')
+            flash('Marcas actualizada con exito')
             return redirect(url_for('marcas.ver_marcas'))
     return render_template('edit_marca.html', marca=marca)
 
 @marcas.route('/delete-marca/<int:id>', methods=['GET'])
 def delete_marca(id):
-    marca = Marca.query.get_or_404(id)
+    marca = Marcas.query.get_or_404(id)
     db.session.delete(marca)
     db.session.commit()
-    flash('Marca eliminada con exito')
+    flash('Marcas eliminada con exito')
     return redirect(url_for('marcas.ver_marcas'))
