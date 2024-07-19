@@ -1,6 +1,6 @@
 # routes/marcas.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.product import Marca
+from models.tables import Marca
 from utils.db import db
 
 marcas = Blueprint('marcas', __name__)

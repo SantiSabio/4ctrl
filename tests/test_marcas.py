@@ -1,7 +1,7 @@
 import unittest
 from flask import Flask, url_for
 from app import create_app
-from models.product import Marca
+from models.tables import Marca
 from utils.db import db
 
 class MarcasTestCase(unittest.TestCase):
@@ -54,6 +54,10 @@ class MarcasTestCase(unittest.TestCase):
 
         self.assertEqual(updated_marca.nombre, 'Marca Actualizada')
         self.assertEqual(updated_marca.cant_art, 6)
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
 
     def test_delete_marca(self):
         marca = Marca(nombre='Marca a Eliminar', cant_art=5)

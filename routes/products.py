@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from models.product import Productos,Marca
+from models.tables import Productos,Marca
 from app import db
 
 products = Blueprint('products', __name__)
