@@ -17,3 +17,8 @@ pip install -r requirements.txt
 flask db init
 flask db migrate -m "Create Products and Marca tables"
 flask db upgrade
+# python3 -m unittest tests.test_app
+# python3 -m unittest tests.test_db
+# python3 -m unittest tests.test_marcas
+# python3 -m unittest tests.test_products
+# python3 -m unittest tests.test_tables
