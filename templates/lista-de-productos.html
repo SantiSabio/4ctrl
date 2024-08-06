@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Lista de Marcas</title>
+    <title>Lista de Productos por Marca</title>
     <style>
+    
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -47,34 +49,25 @@
         .button:hover {
             background-color: #45a049;
         }
+    
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Lista de Marcas</h1>
-        
-        <!-- Botón para redirigir a marcas.add_product -->
-        <a href="{{ url_for('marcas.add_marca') }}" class="button">Agregar Marca</a>
-        <a href="{{ url_for('products.home') }}" class="button">Volver a Inicio</a>
-
+        <h1>Lista de Productos por Marca: {{ marca.nombre }}</h1>
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Cantidad de Artículos</th>
-                    <th>Operaciones</th>
+                    <th>Nombre del Producto</th>
+                    <th>Precio</th>
                 </tr>
             </thead>
             <tbody>
-                {% for marca in marcas %}
-                <tr>
-                    <td>{{ marca.nombre }}</td>
-                    <td>{{ marca.cant_art }}</td>
-                    <td>
-                        <a href="{{ url_for('marcas.listar_productos', marca_nombre=marca.nombre) }}" class="button">Listar Productos</a>
-
-                    </td>
-                </tr>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.precio }}</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
