@@ -1,4 +1,5 @@
 import unittest
+
 from app import create_app
 from models.tables import Marcas, Productos
 from utils.db import db
@@ -47,8 +48,6 @@ class MarcasTestCase(unittest.TestCase):
         db.session.delete(added_marca)
         db.session.commit()
 
-
-
     def test_add_marca_post_invalid(self):
         response = self.client.post('/marcas/add-marca', data={
             'nombre': '',
@@ -73,7 +72,6 @@ class MarcasTestCase(unittest.TestCase):
         db.session.delete(updated_marca)
         db.session.commit()
 
-
     def test_delete_marca(self):
         marca = Marcas(nombre='Marcas a Eliminar', cant_art=5)
         db.session.add(marca)
@@ -86,7 +84,6 @@ class MarcasTestCase(unittest.TestCase):
         # Verifica que la marca ya no existe en la base de datos
         deleted_marca = db.session.execute(db.select(Marcas).filter_by(id=marca_id)).scalar_one_or_none()
         self.assertIsNone(deleted_marca)
-
 
     def test_ver_productos(self):
         # Setup test data
@@ -115,7 +112,4 @@ class MarcasTestCase(unittest.TestCase):
         db.session.commit()
         db.session.delete(marca1)
         db.session.commit()  # Commit the deletion of the brand
-
-
-if __name__ == '__main__':
-    unittest.main()
+   

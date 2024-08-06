@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 # Copiar requirements: pip freeze > requirements.txt
 
-# PARTE MIGRATE
+# Migrate
 
 flask db init
 flask db migrate -m "Create Productos and Marcas tables"
@@ -42,4 +42,3 @@ ALTER TABLE productos
 ADD COLUMN marca VARCHAR(100),
 ADD CONSTRAINT fk_marca
 FOREIGN KEY (marca) REFERENCES marcas(nombre);
-
