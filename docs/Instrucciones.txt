@@ -1,35 +1,45 @@
 # Crear env
 
-python3 -m venv env
+python3 -m venv .venv
 
-# activar env
+# Activar env
 
-source env/bin/activate
+source .venv/bin/activate
 
-#pip install flask
-pip install flask-sqlalchemy
-pip install flask-migrate
-pip install mysql-connector-python
-# copiar requirements
-
-pip freeze > requirements.txt
-
-# instalar requirements
+# Instalar requirements
 
 pip install -r requirements.txt
 
+# Copiar requirements: pip freeze > requirements.txt
 
+# PARTE MIGRATE
 
+flask db init
+flask db migrate -m "Create Productos and Marcas tables"
+flask db upgrade
 
-# Instalar XAMPP
+# En SQL
 
-https://inteligentedigital.com/como-instalar-xampp-en-ubuntu-22-04-paso-a-paso/
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    precio FLOAT NOT NULL
+);
 
-https://www.apachefriends.org/es/index.html
+CREATE TABLE marcas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    cant_art INT NOT NULL
+);
 
-https://www.apachefriends.org/es/faq_linux.html
+-- Crear índice en la columna 'nombre' de la tabla 'marcas'
 
-# Iniciar XAMPP
+CREATE INDEX idx_marcas_nombre ON marcas (nombre);
 
-$ cd /opt/lampp
-$ sudo ./manager-linux-x64.run
+-- Agregar columna 'marca' a la tabla 'productos' y definir la restricción de clave foránea
+
+ALTER TABLE productos
+ADD COLUMN marca VARCHAR(100),
+ADD CONSTRAINT fk_marca
+FOREIGN KEY (marca) REFERENCES marcas(nombre);
+
