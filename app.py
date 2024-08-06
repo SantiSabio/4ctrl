@@ -18,7 +18,7 @@ def create_app():
 
     # Registro de los blueprints
     from routes.products import products
-    from routes.marcas import marcas
+    from routes.brands import marcas
 
     app.register_blueprint(products)
     app.register_blueprint(marcas, url_prefix='/marcas')

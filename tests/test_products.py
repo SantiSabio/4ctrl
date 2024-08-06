@@ -1,6 +1,7 @@
 import unittest
 from app import create_app
-from models.tables import Productos,Marcas
+from models.Product import Product
+from models.tables import Brands
 from utils.db import db
 from sqlalchemy import select
 
@@ -31,7 +32,7 @@ class ProductTestCase(unittest.TestCase):
 
     def test_add_product_post_valid(self):
 
-        marca=Marcas(nombre='Nueva Marcas', cant_art=51)
+        marca=Brands(nombre='Nueva Marcas', cant_art=51)
         db.session.add(marca)
         # Asegúrate de que la ruta sea '/add_products' y no '/marcas/add-product'
         response = self.client.post('/add_products', data={
@@ -42,7 +43,7 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Verifica que el producto se haya agregado correctamente a la base de datos
-        added_product = db.session.execute(db.select(Productos).filter_by(nombre='Nuevo Producto')).scalar_one_or_none()
+        added_product = db.session.execute(db.select(Product).filter_by(nombre='Nuevo Producto')).scalar_one_or_none()
         self.assertIsNotNone(added_product)
         self.assertEqual(added_product.precio, 5.00)
         self.assertEqual(added_product.marca, 'Nueva Marcas')
@@ -64,19 +65,19 @@ class ProductTestCase(unittest.TestCase):
 
         # Verifica que el producto no se haya agregado a la base de datos
 
-        added_product = db.session.execute(db.select(Productos).filter_by(nombre='')).scalar_one_or_none()
+        added_product = db.session.execute(db.select(Product).filter_by(nombre='')).scalar_one_or_none()
         self.assertIsNone(added_product)
 
         
     def test_edit_product(self):
-        product = Productos(nombre='Productos Original',precio=5 ,marca='Nueva Marcas')
+        product = Product(nombre='Productos Original',precio=5 ,marca='Nueva Marcas')
         db.session.add(product)
         db.session.commit()
         product_id= product.id
 
         response = self.client.post(f'/edit/{product.id}', data={'nombre': 'Productos Actualizada','precio': 6, 'marca':'Nueva Marcas'}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        updated_product=db.session.get(Productos,product_id)
+        updated_product=db.session.get(Product,product_id)
         self.assertIsNotNone(updated_product)
 
         self.assertEqual(updated_product.nombre, 'Productos Actualizada')
@@ -88,7 +89,7 @@ class ProductTestCase(unittest.TestCase):
     
 
     def test_delete_product(self):
-        product = Productos(nombre='Productos a Eliminar',precio=500,marca='Nueva Marcas')
+        product = Product(nombre='Productos a Eliminar',precio=500,marca='Nueva Marcas')
         db.session.add(product)
         db.session.commit()
 
@@ -97,7 +98,7 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la product ya no existe en la base de datos
-        deleted_product = db.session.get(Productos,product_id)
+        deleted_product = db.session.get(Product,product_id)
         self.assertIsNone(deleted_product)
 
 if __name__ == '__main__':
