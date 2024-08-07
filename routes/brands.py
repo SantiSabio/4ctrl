@@ -1,18 +1,34 @@
 # routes/brands.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.Brand import Brand
-from models.Product import Product
-from utils.db import db
+from models.Brand import Brands
+from models.Product import Products
+from app import db
 
 brands = Blueprint('brands', __name__)
 
-def check_marca(name, ammount):
+
+@brands.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        password = 'administrador'
+        if request.form.get('password') == password:
+            return redirect(url_for('brands.home'))
+        else:
+            return render_template("login.html", error='Contraseña incorrecta')
+    return render_template("login.html")
+
+@brands.route('/home')
+def home():
+    brands = Brands.query.all()
+    return render_template("brands.html", brands=brands)
+
+def check_brand(name, amount):
     if not isinstance(name, str) or not name.strip():
         flash('El nombre de la marca debe ser un string no vacío', 'error')
         return False
     try:
-        ammount = int(ammount)
-        if ammount < 1:
+        amount = int(amount)
+        if amount < 1:
             flash('La cantidad de artículos debe ser mayor a 0', 'error')
             return False
     except ValueError:
@@ -20,54 +36,48 @@ def check_marca(name, ammount):
         return False
     return True
 
-
-
 @brands.route('/', methods=['GET'])
-def ver_marcas():
-    
-    brands = Brand.query.all()
+def list_brands():
+    brands = Brands.query.all()
     return render_template('brands.html', brands=brands)
 
 @brands.route('/add-brand', methods=['GET', 'POST'])
-def add_marca():
+def add_brand():
     if request.method == 'POST':
-        namet = request.form['name']
-        cant = request.form['ammount_art']
-        if check_marca(namet, cant):
-            nueva_marca = Brand(name=namet, ammount_art=cant)
-            db.session.add(nueva_marca)
+        name = request.form['name']
+        amount = request.form['amount_art']
+        if check_brand(name, amount):
+            new_brand = Brands(name=name, amount_art=amount)
+            db.session.add(new_brand)
             db.session.commit()
-            flash('Marcas agregada con exito')
-            return redirect(url_for('brands.ver_marcas'))
-    return render_template('add_marca.html')
+            flash('Marcas agregada con éxito')
+            return redirect(url_for('brands.list_brands'))
+    return render_template('add_brand.html')
 
-@brands.route('/edit-marca/<int:id>', methods=['GET', 'POST'])
-def edit_marca(id):
-    marca = Brand.query.get_or_404(id)
+@brands.route('/edit-brand/<int:id>', methods=['GET', 'POST'])
+def edit_brand(id):
+    brand = Brands.query.get_or_404(id)
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        cant_art= request.form['cant_art']
-        if check_marca(nombre,cant_art):
-            marca.nombre = nombre
-            marca.cant_art= int(cant_art)
+        name = request.form['name']
+        amount_art = request.form['amount_art']
+        if check_brand(name, amount_art):
+            brand.name = name
+            brand.amount_art = int(amount_art)
             db.session.commit()
-            flash('Marcas actualizada con exito')
-            return redirect(url_for('brands.ver_marcas'))
-    return render_template('edit_marca.html', marca=marca)
+            flash('Marcas actualizada con éxito')
+            return redirect(url_for('brands.list_brands'))
+    return render_template('edit_brand.html', brand=brand)
 
-@brands.route('/delete-marca/<int:id>', methods=['GET'])
-def delete_marca(id):
-    marca = Brand.query.get_or_404(id)
-    db.session.delete(marca)
+@brands.route('/delete-brand/<int:id>', methods=['GET'])
+def delete_brand(id):
+    brand = Brands.query.get_or_404(id)
+    db.session.delete(brand)
     db.session.commit()
-    flash('Marcas eliminada con exito')
-    return redirect(url_for('brands.ver_marcas'))
+    flash('Marcas eliminada con éxito')
+    return redirect(url_for('brands.list_brands'))
 
-
-@brands.route('/lista-de-productos/<string:marca_nombre>', methods=['GET'])
-def listar_productos(marca_nombre):
-    # Fetch the brand by name
-    marcap = Brand.query.filter_by(nombre=marca_nombre).first_or_404()  # Use filter_by for name
-    # Fetch products associated with the brand
-    productosp = Product.query.filter_by(marca=marcap.nombre).all()  # Use the Marcas object to filter products
-    return render_template('lista-de-productos.html', marca=marcap, productos=productosp)
+@brands.route('/products-list/<string:brand_name>', methods=['GET'])
+def list_products(brand_name):
+    brand = Brands.query.filter_by(name=brand_name).first_or_404()
+    products = Products.query.filter_by(brand=brand.name).all()
+    return render_template('products_list.html', brand=brand, products=products)

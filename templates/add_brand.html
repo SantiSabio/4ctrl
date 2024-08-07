@@ -64,8 +64,8 @@
         {% endif %}
         {% endwith %}
         <a href="{{ url_for('products.home') }}" class="button">Volver a Inicio</a>
-        <form action="{{ url_for('marcas.add_marca') }}" method="POST">
-            <input type="text" name="nombre" placeholder="Nombre">
-            <input type="text" name="cant_art" placeholder="Cant_Art">
+        <form action="{{ url_for('brands.add_brand') }}" method="POST">
+            <input type="text" name="name" placeholder="Nombre">
+            <input type="text" name="amount_art" placeholder="Cant_Art">
             <button type="submit">Agregar Marca</button>
         </form>

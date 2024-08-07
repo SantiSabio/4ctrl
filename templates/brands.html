@@ -54,8 +54,8 @@
         <h1>Lista de Marcas</h1>
         
         <!-- Botón para redirigir a marcas.add_product -->
-        <a href="{{ url_for('marcas.add_marca') }}" class="button">Agregar Marca</a>
-        <a href="{{ url_for('products.home') }}" class="button">Volver a Inicio</a>
+        <a href="{{ url_for('brands.add_brand') }}" class="button">Agregar Marca</a>
+        <a href="{{ url_for('products.home') }}" class="button">Ir a productos</a>
 
         <table>
             <thead>
@@ -66,12 +66,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for marca in marcas %}
+                {% for brand in brands %}
                 <tr>
-                    <td>{{ marca.nombre }}</td>
-                    <td>{{ marca.cant_art }}</td>
+                    <td>{{ brand.name }}</td>
+                    <td>{{ brand.amount_art }}</td>
                     <td>
-                        <a href="{{ url_for('marcas.listar_productos', marca_nombre=marca.nombre) }}" class="button">Listar Productos</a>
+                        <a href="{{ url_for('brands.list_brands', brand_name=brand.name) }}" class="button">Listar Productos</a>
 
                     </td>
                 </tr>

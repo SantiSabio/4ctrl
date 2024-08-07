@@ -65,20 +65,16 @@
         {% endwith %}
 
         <form id="product-form" action="{{ url_for('products.add_product') }}" method="POST">
-            <input type="text" name="nombre" placeholder="Nombre" required>
-            <input type="text" name="marca" id="marca" list="marcas" placeholder="Marca" required>
+            <input type="text" name="name" placeholder="Nombre" required>
+            <input type="text" name="brand" id="brand" list="marcas" placeholder="Marca" required>
             <datalist id="marcas">
-            <!-- Aquí se cargarán las opciones de marca desde la base de datos -->
+                <!-- Aquí se cargarán las opciones de marca desde la base de datos -->
             </datalist>
-
-            </select>
-            
-            <input type="text" name="precio" placeholder="Precio" required>
+            <input type="text" name="price" placeholder="Precio" required>
             <button type="submit">Agregar Producto</button>
         </form>
 
-
-        <form action="{{ url_for('marcas.ver_marcas') }}" method="GET">
+        <form action="{{ url_for('brands.list_brands') }}" method="GET">
             <button type="submit">Ver Marcas</button>
         </form>
 
@@ -92,49 +88,49 @@
                 </tr>
             </thead>
             <tbody>
-                {% for producto in productos %}
+                {% for product in products %}
                 <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.marca }}</td>
-                    <td>{{ producto.precio }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.price }}</td>
                     <td>
-                        <a href="/edit/{{ producto.id }}">Editar</a>
-                        <a href="/delete/{{ producto.id }}">Eliminar</a>
+                        <a href="{{ url_for('products.edit_product', id=product.id) }}">Editar</a>
+                        <a href="{{ url_for('products.delete_product', id=product.id) }}">Eliminar</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <script>
+    // Obtener el campo de marca
+    const brandInput = document.getElementById('brand');
+    const marcasDatalist = document.getElementById('marcas');
+
+    // Agregar evento de entrada al campo de marca
+    brandInput.addEventListener('input', function() {
+        // Obtener el valor actual del campo de marca
+        const brandValue = this.value;
+
+        // Realizar una solicitud AJAX para obtener las marcas que coinciden
+        fetch('/get_brands?q=' + encodeURIComponent(brandValue))
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar las opciones anteriores
+                marcasDatalist.innerHTML = '';
+
+                // Agregar las nuevas opciones
+                data.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand.nombre;
+                    marcasDatalist.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener las marcas:', error);
+            });
+    });
+    </script>
 </body>
 </html>
-
-<script>
-// Obtener el campo de marca
-const marcaInput = document.getElementById('marca');
-const marcasDatalist = document.getElementById('marcas');
-
-// Agregar evento de entrada al campo de marca
-marcaInput.addEventListener('input', function() {
-    // Obtener el valor actual del campo de marca
-    const marcaValue = this.value;
-
-    // Realizar una solicitud AJAX para obtener las marcas que coinciden
-    fetch('/get_marcas?q=' + encodeURIComponent(marcaValue))
-        .then(response => response.json())
-        .then(data => {
-            // Limpiar las opciones anteriores
-            marcasDatalist.innerHTML = '';
-
-            // Agregar las nuevas opciones
-            data.forEach(marca => {
-                const option = document.createElement('option');
-                option.value = marca.nombre;
-                marcasDatalist.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error al obtener las marcas:', error);
-        });
-});
-</script>

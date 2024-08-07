@@ -15,30 +15,30 @@ pip install -r requirements.txt
 # Migrate
 
 flask db init
-flask db migrate -m "Create Productos and Marcas tables"
+flask db migrate -m "Create Products and Brands tables"
 flask db upgrade
 
 # En SQL
 
-CREATE TABLE productos (
+CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    precio FLOAT NOT NULL
+    name VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL
 );
 
-CREATE TABLE marcas (
+CREATE TABLE brands (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255) NOT NULL,
-    cant_art INT NOT NULL
+    name VARCHAR(255) NOT NULL,
+    amount_art INT NOT NULL
 );
 
 -- Crear índice en la columna 'nombre' de la tabla 'marcas'
 
-CREATE INDEX idx_marcas_nombre ON marcas (nombre);
+CREATE INDEX idx_brands_name ON brands (name);
 
 -- Agregar columna 'marca' a la tabla 'productos' y definir la restricción de clave foránea
 
-ALTER TABLE productos
-ADD COLUMN marca VARCHAR(100),
-ADD CONSTRAINT fk_marca
-FOREIGN KEY (marca) REFERENCES marcas(nombre);
+ALTER TABLE products
+ADD COLUMN brand VARCHAR(100),
+ADD CONSTRAINT fk_brand
+FOREIGN KEY (brand) REFERENCES brands(name);

@@ -18,10 +18,10 @@ def create_app():
 
     # Registro de los blueprints
     from routes.products import products
-    from routes.brands import marcas
+    from routes.brands import brands
 
-    app.register_blueprint(products)
-    app.register_blueprint(marcas, url_prefix='/marcas')
+    app.register_blueprint(products,url_prefix='/products')
+    app.register_blueprint(brands, url_prefix='/brands')
 
     app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'
     
