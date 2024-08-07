@@ -5,6 +5,13 @@ from app import db
 
 products = Blueprint('products', __name__)
 
+
+@products.route('/')
+def home():
+    products = Products.query.all()
+    return render_template("index.html", products=products)
+
+
 @products.route('/get_brands', methods=['GET'])
 def get_brands():
     query = request.args.get('q', '')
@@ -67,7 +74,7 @@ def edit_product(id):
         brand_exists = Brands.query.filter_by(name=brand).first()
         if not brand_exists:
             flash('La marca seleccionada no existe')
-            return redirect(url_for('products.home'))
+            return redirect(url_for('products.edit_product', id=id))
 
         if check(name, brand, price):
             product.name = name

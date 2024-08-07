@@ -7,17 +7,17 @@ from app import db
 brands = Blueprint('brands', __name__)
 
 
-@brands.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        password = 'administrador'
-        if request.form.get('password') == password:
-            return redirect(url_for('brands.home'))
-        else:
-            return render_template("login.html", error='Contraseña incorrecta')
-    return render_template("login.html")
+# @brands.route('/', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         password = 'administrador'
+#         if request.form.get('password') == password:
+#             return redirect(url_for('brands.home'))
+#         else:
+#             return render_template("login.html", error='Contraseña incorrecta')
+#     return render_template("login.html")
 
-@brands.route('/home')
+@brands.route('/')
 def home():
     brands = Brands.query.all()
     return render_template("brands.html", brands=brands)
@@ -80,4 +80,4 @@ def delete_brand(id):
 def list_products(brand_name):
     brand = Brands.query.filter_by(name=brand_name).first_or_404()
     products = Products.query.filter_by(brand=brand.name).all()
-    return render_template('products_list.html', brand=brand, products=products)
+    return render_template('product_list.html', brand=brand, products=products)

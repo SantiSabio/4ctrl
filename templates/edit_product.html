@@ -35,9 +35,9 @@
 </head>
 <body>
     <form action="/edit/{{ product.id }}" method="POST">
-        <input type="text" name="name" placeholder="Nombre" value="{{ nombre|default(product.name) }}">
-        <input type="text" name="brand" placeholder="Marca" value="{{ marca|default(product.brand) }}">
-        <input type="text" name="price" placeholder="Precio" value="{{ precio|default(product.price) }}">
+        <input type="text" name="name" placeholder="Nombre" value="{{ name|default(product.name) }}">
+        <input type="text" name="brand" placeholder="Marca" value="{{ brand|default(product.brand) }}">
+        <input type="text" name="price" placeholder="Precio" value="{{ price|default(product.price) }}">
         <button type="submit">Guardar</button>
     </form>
 </body>
