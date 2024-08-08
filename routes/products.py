@@ -1,29 +1,35 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from models.Product import Product
-from models.tables import Brands
+from models.Product import Products
+from models.Brand import Brands
 from app import db
 
 products = Blueprint('products', __name__)
 
-@products.route('/get_marcas', methods=['GET'])
-def get_marcas():
+
+@products.route('/')
+def home():
+    products = Products.query.all()
+    return render_template("products.html", products=products)
+
+
+@products.route('/get_brands', methods=['GET'])
+def get_brands():
     query = request.args.get('q', '')
-    marcas = Brands.query.filter(Brands.nombre.ilike(f'%{query}%')).all()
-    return jsonify([{'nombre': marca.nombre} for marca in marcas])
+    brands = Brands.query.filter(Brands.nombre.ilike(f'%{query}%')).all()
+    return jsonify([{'nombre': brand.nombre} for brand in brands])
 
-
-def check(nombre, marca, precio):
-    if not isinstance(nombre, str) or not nombre.strip():
+def check(name, brand, price):
+    if not isinstance(name, str) or not name.strip():
         flash('El nombre debe ser un string no vacío')
         return False
 
-    if not isinstance(marca, str) or not marca.strip():
+    if not isinstance(brand, str) or not brand.strip():
         flash('La marca debe ser un string no vacío')
         return False
 
     try:
-        precio = float(precio)
-        if precio <= 0:
+        price = float(price)
+        if price <= 0:
             flash('El precio debe ser un número positivo')
             return False
     except ValueError:
@@ -32,81 +38,74 @@ def check(nombre, marca, precio):
 
     return True
 
-
-@products.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        password = 'administrador'
-        if request.form.get('password') == password:
-            return redirect(url_for('products.home'))
-        else:
-            return render_template("login.html", error='Contraseña incorrecta')
-    return render_template("login.html")
-
-@products.route('/home')
-def home():
-    productos = Product.query.all()
-    return render_template("index.html", productos=productos)
-
-
 @products.route('/add_products', methods=['GET', 'POST'])
 def add_product():
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        marca = request.form['marca']
-        precio = request.form['precio']
+        name = request.form['name']
+        brand = request.form['brand']
+        price = request.form['price']
 
-        # Verificar si la marca existe en la base de datos
-        marca_existe = Brands.query.filter_by(nombre=marca).first()
-        if not marca_existe:
+        brand_exists = Brands.query.filter_by(name=brand).first()
+        if not brand_exists:
             flash('La marca seleccionada no existe')
             return redirect(url_for('products.add_product'))
 
-        if check(nombre, marca, precio):
-            new_product = Product(nombre=nombre, marca=marca, precio=float(precio))
+        if check(name, brand, price):
+            new_product = Products(name=name, brand=brand, price=float(price))
             db.session.add(new_product)
+            brand_exists.amount_art += 1
+
             db.session.commit()
+            
             flash('Producto agregado con éxito')
             return redirect(url_for('products.home'))
         else:
-            # Obtener la lista de marcas para el template
-            marcas = Brands.query.all()
-            return render_template('index.html', nombre=nombre, marca=marca, precio=precio, marcas=marcas)
+            brands = Brands.query.all()
+            return render_template('products.html', nombre=name, marca=brand, precio=price, marcas=brands)
 
-    # Obtener la lista de marcas para el template
-    marcas = Brands.query.all()
-    return render_template('index.html', marcas=marcas)
+    brands = Brands.query.all()
+    return render_template('products.html', marcas=brands)
 
 @products.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
-    product = Product.query.get_or_404(id)
+    product = Products.query.get_or_404(id)
     if request.method == 'POST':
-        nombre = request.form['nombre']
-        marca = request.form['marca']
-        precio = request.form['precio']
+        name = request.form['name']
+        brand = request.form['brand']
+        price = request.form['price']
 
-        marca_existe = Brands.query.filter_by(nombre=marca).first()
-        if not marca_existe:
+        # Verifica si la marca existe
+        brand_exists = Brands.query.filter_by(name=brand).first()
+        if not brand_exists:
             flash('La marca seleccionada no existe')
-            return redirect(url_for('products.home'))
+            return redirect(url_for('products.edit_product', id=id))
 
-
-        if check(nombre, marca, precio):
-            product.nombre = nombre
-            product.marca = marca
-            product.precio = float(precio)
-            db.session.commit()
+        # Validación de los datos del producto
+        if check(name, brand, price):
+            product.name = name
+            product.brand = brand
+            product.price = float(price)
+            db.session.commit()  # Guarda los cambios en la base de datos
             flash('Producto actualizado con éxito')
-            return redirect(url_for('products.home'))
+            return redirect(url_for('products.home'))  # Redirige a la página de inicio de productos
         else:
-            return render_template('edit-product.html', product=product, nombre=nombre, marca=marca, precio=precio)
+            flash('Error en los datos ingresados')
+            return render_template('edit_product.html', product=product, nombre=name, marca=brand, precio=price)
 
-    return render_template('edit-product.html', product=product)
+    # Renderiza el formulario para editar el producto con los datos actuales
+    return render_template('edit_product.html', product=product)
+
+
 
 @products.route('/delete/<int:id>', methods=['GET'])
 def delete_product(id):
-    product = Product.query.get_or_404(id)
+
+    product = Products.query.get_or_404(id)
     db.session.delete(product)
+
+    brand = Brands.query.filter_by(name=product.brand).first()
+    brand.amount_art -= 1
+
     db.session.commit()
     flash('Producto eliminado con éxito')
     return redirect(url_for('products.home'))
