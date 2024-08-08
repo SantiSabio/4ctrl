@@ -103,4 +103,3 @@ class ProductTestCase(unittest.TestCase):
         deleted_product = db.session.get(Product, product_id)
         self.assertIsNone(deleted_product)
 
-if __name__ == '__main__':

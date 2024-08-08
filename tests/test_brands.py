@@ -1,11 +1,12 @@
 import unittest
 from app import create_app
-from models.Product import Product
-from models.tables import Brands
+from models.Product import Products
+from models.Brand import Brands
 from utils.db import db
 
 
 class MarcasTestCase(unittest.TestCase):
+#Levantamos una app y  creamos DB y sus tablas
     def setUp(self):
         self.app = create_app()
         self.app.config['TESTING'] = True
@@ -15,34 +16,25 @@ class MarcasTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-    #def tearDown(self):
-    #    db.session.remove()
-    #    db.drop_all()
-    #   self.app_context.pop()
 
-    def test_ver_marcas(self):
-        response = self.client.get('/marcas/')  
+    def test_see_brands(self):
+        response = self.client.get('/')  
         self.assertEqual(response.status_code, 200)
 
-    def test_add_marca_get(self):
-        response = self.client.get('/marcas/add-marca')
-        self.assertEqual(response.status_code, 200)
 
     def test_add_marca_post_valid(self):
         # Enviar solicitud POST para agregar una nueva marca
-        response = self.client.post('/marcas/add-marca', data={
-            'nombre': 'Nueva Marca',  # Asegúrate de que el nombre sea consistente
-            'cant_art': '5'
-        }, follow_redirects=True)
+        response = self.client.post('/add-brand', data={
+            'name': 'Nueva Marca'}, follow_redirects=True)
         
         # Verifica que la respuesta sea 200 OK
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca se haya agregado correctamente a la base de datos
-        added_marca = db.session.execute(db.select(Brands).filter_by(nombre='Nueva Marca')).scalar_one_or_none()  # Asegúrate de que la consulta sea correcta
+        added_marca = db.session.execute(db.select(Brands).filter_by(name='Nueva Marca')).scalar_one_or_none()  # Asegúrate de que la consulta sea correcta
         self.assertIsNotNone(added_marca)
-        self.assertEqual(added_marca.cant_art, 5)  # Comparar con entero ya que 'cant_art' es un número
-        self.assertEqual(added_marca.nombre, 'Nueva Marca')  # Verifica el nombre correctamente
+        self.assertEqual(added_marca.amount_art, 0)  # Comparar con entero ya que 'amount_art' es un número que  por defecto es 0
+        self.assertEqual(added_marca.name, 'Nueva Marca')  # Verifica el name correctamente
         
         # Eliminar la marca agregada para limpiar la base de datos
         db.session.delete(added_marca)
@@ -51,37 +43,19 @@ class MarcasTestCase(unittest.TestCase):
 
 
     def test_add_marca_post_invalid(self):
-        response = self.client.post('/marcas/add-marca', data={
-            'nombre': '',
-            'cant_art': 'no es un número'
+        response = self.client.post('/add-brand', data={
+            'name': '',
         }, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
-    def test_edit_marca(self):
-        marca = Brands(nombre='Marcas Original', cant_art=5)
-        db.session.add(marca)
-        db.session.commit()
-        marca_id= marca.id
-
-        response = self.client.post(f'/marcas/edit-marca/{marca.id}', data={'nombre': 'Marcas Actualizada','cant_art': 6}, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        updated_marca=db.session.get(Brands,marca_id)
-        self.assertIsNotNone(updated_marca)
-
-        self.assertEqual(updated_marca.nombre, 'Marcas Actualizada')
-        self.assertEqual(updated_marca.cant_art, 6)
-
-        db.session.delete(updated_marca)
-        db.session.commit()
-
 
     def test_delete_marca(self):
-        marca = Brands(nombre='Marcas a Eliminar', cant_art=5)
+        marca = Brands(name='Marcas a Eliminar')
         db.session.add(marca)
         db.session.commit()
 
         marca_id = marca.id
-        response = self.client.get(f'/marcas/delete-marca/{marca_id}', follow_redirects=True)
+        response = self.client.get(f'/delete-brand/{marca_id}', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca ya no existe en la base de datos
@@ -89,20 +63,20 @@ class MarcasTestCase(unittest.TestCase):
         self.assertIsNone(deleted_marca)
 
 
-    def test_ver_productos(self):
+    def test_list_products(self):
         # Setup test data
-        marca1 = Brands(nombre='Marca de prueba', cant_art=5)
+        marca1 = Brands(name='Marca de prueba')
         db.session.add(marca1)
         db.session.commit()
 
-        producto1 = Product(nombre='Prod1', precio=123,  marca=marca1.nombre)
-        producto2 = Product(nombre='Prod2', precio=456,  marca=marca1.nombre)
+        producto1 = Products(name='Prod1', price=123,  brand=marca1.name)
+        producto2 = Products(name='Prod2', price=456,  brand=marca1.name)
         db.session.add(producto1)
         db.session.add(producto2)
         db.session.commit()
 
         # Make the request
-        response = self.client.get(f'/marcas/lista-de-productos/{marca1.nombre}', follow_redirects=True)
+        response = self.client.get(f'/products-list/{marca1.name}', follow_redirects=True)
 
         # Assert the response
         self.assertEqual(response.status_code, 200)

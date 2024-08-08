@@ -9,7 +9,7 @@ products = Blueprint('products', __name__)
 @products.route('/')
 def home():
     products = Products.query.all()
-    return render_template("index.html", products=products)
+    return render_template("products.html", products=products)
 
 
 @products.route('/get_brands', methods=['GET'])
@@ -99,7 +99,6 @@ def edit_product(id):
 
 @products.route('/delete/<int:id>', methods=['GET'])
 def delete_product(id):
-
 
     product = Products.query.get_or_404(id)
     db.session.delete(product)

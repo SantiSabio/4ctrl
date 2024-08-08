@@ -7,16 +7,6 @@ from app import db
 brands = Blueprint('brands', __name__)
 
 
-# @brands.route('/', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'POST':
-#         password = 'administrador'
-#         if request.form.get('password') == password:
-#             return redirect(url_for('brands.home'))
-#         else:
-#             return render_template("login.html", error='Contraseña incorrecta')
-#     return render_template("login.html")
-
 def check_brand(name):
     if not isinstance(name, str) or not name.strip():
         flash('El nombre de la marca debe ser un string no vacío', 'error')
@@ -40,20 +30,6 @@ def add_brand():
             flash('Marcas agregada con éxito')
             return redirect(url_for('brands.home'))
     return render_template('add_brand.html')
-
-@brands.route('/edit-brand/<int:id>', methods=['GET', 'POST'])
-def edit_brand(id):
-    brand = Brands.query.get_or_404(id)
-    if request.method == 'POST':
-        name = request.form['name']
-        amount_art = request.form['amount_art']
-        if check_brand(name, amount_art):
-            brand.name = name
-            brand.amount_art = int(amount_art)
-            db.session.commit()
-            flash('Marcas actualizada con éxito')
-            return redirect(url_for('brands.list_brands'))
-    return render_template('edit_brand.html', brand=brand)
 
 @brands.route('/delete-brand/<int:id>', methods=['GET'])
 def delete_brand(id):
