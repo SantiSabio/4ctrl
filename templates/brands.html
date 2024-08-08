@@ -71,8 +71,9 @@
                     <td>{{ brand.name }}</td>
                     <td>{{ brand.amount_art }}</td>
                     <td>
-                        <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="button">Listar Productos</a>
-
+                    <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="button">Listar Productos</a>
+                    <!-- Replace the delete link with a form -->
+                    <a href="{{ url_for('brands.delete_brand', id=brand.id) }}" class="button">Eliminar marca</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -9,7 +9,7 @@ products = Blueprint('products', __name__)
 @products.route('/')
 def home():
     products = Products.query.all()
-    return render_template("index.html", products=products)
+    return render_template("products.html", products=products)
 
 
 @products.route('/get_brands', methods=['GET'])
@@ -53,15 +53,18 @@ def add_product():
         if check(name, brand, price):
             new_product = Products(name=name, brand=brand, price=float(price))
             db.session.add(new_product)
+            brand_exists.amount_art += 1
+
             db.session.commit()
+            
             flash('Producto agregado con éxito')
             return redirect(url_for('products.home'))
         else:
             brands = Brands.query.all()
-            return render_template('index.html', nombre=name, marca=brand, precio=price, marcas=brands)
+            return render_template('products.html', nombre=name, marca=brand, precio=price, marcas=brands)
 
     brands = Brands.query.all()
-    return render_template('index.html', marcas=brands)
+    return render_template('products.html', marcas=brands)
 
 @products.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_product(id):
@@ -71,27 +74,39 @@ def edit_product(id):
         brand = request.form['brand']
         price = request.form['price']
 
+        # Verifica si la marca existe
         brand_exists = Brands.query.filter_by(name=brand).first()
         if not brand_exists:
             flash('La marca seleccionada no existe')
             return redirect(url_for('products.edit_product', id=id))
 
+        # Validación de los datos del producto
         if check(name, brand, price):
             product.name = name
             product.brand = brand
             product.price = float(price)
-            db.session.commit()
+            db.session.commit()  # Guarda los cambios en la base de datos
             flash('Producto actualizado con éxito')
-            return redirect(url_for('products.home'))
+            return redirect(url_for('products.home'))  # Redirige a la página de inicio de productos
         else:
+            flash('Error en los datos ingresados')
             return render_template('edit_product.html', product=product, nombre=name, marca=brand, precio=price)
 
+    # Renderiza el formulario para editar el producto con los datos actuales
     return render_template('edit_product.html', product=product)
+
+
 
 @products.route('/delete/<int:id>', methods=['GET'])
 def delete_product(id):
+
+
     product = Products.query.get_or_404(id)
     db.session.delete(product)
+
+    brand = Brands.query.filter_by(name=product.brand).first()
+    brand.amount_art -= 1
+
     db.session.commit()
     flash('Producto eliminado con éxito')
     return redirect(url_for('products.home'))

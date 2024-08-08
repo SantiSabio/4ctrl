@@ -34,7 +34,7 @@
     </style>
 </head>
 <body>
-    <form action="/edit/{{ product.id }}" method="POST">
+    <form action="{{ url_for('products.edit_product', id=product.id) }}" method="POST">
         <input type="text" name="name" placeholder="Nombre" value="{{ name|default(product.name) }}">
         <input type="text" name="brand" placeholder="Marca" value="{{ brand|default(product.brand) }}">
         <input type="text" name="price" placeholder="Precio" value="{{ price|default(product.price) }}">
@@ -42,4 +42,3 @@
     </form>
 </body>
 </html>
-
