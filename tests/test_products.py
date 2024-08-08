@@ -1,7 +1,7 @@
 import unittest
 from app import create_app
-from models.Product import Products
-from models.Brand import Brands
+from models.Product import Product
+from models.Brand import Brand
 from utils.db import db
 
 class ProductTestCase(unittest.TestCase):
@@ -31,7 +31,7 @@ class ProductTestCase(unittest.TestCase):
 
     def test_add_product_post_valid(self):
         # Agrega una marca válida a la base de datos
-        brand = Brands(name='Nueva Marca', ammount_art=51)
+        brand = Brand(name='Nueva Marca', ammount_art=51)
         db.session.add(brand)
         db.session.commit()
         
@@ -44,7 +44,7 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)  # Verifica que la respuesta sea exitosa
 
         # Verifica que el producto se haya agregado a la base de datos
-        added_product = db.session.execute(db.select(Products).filter_by(name='Nuevo Producto')).scalar_one_or_none()
+        added_product = db.session.execute(db.select(Product).filter_by(name='Nuevo Producto')).scalar_one_or_none()
         self.assertIsNotNone(added_product)  # Asegúrate de que el producto no sea None
         self.assertEqual(added_product.price, 5.00)
         self.assertEqual(added_product.brand, 'Nueva Marca')
@@ -64,12 +64,12 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)  # Verifica que la respuesta sea exitosa
 
         # Verifica que el producto no se haya agregado a la base de datos
-        added_product = db.session.execute(db.select(Products).filter_by(name='')).scalar_one_or_none()
+        added_product = db.session.execute(db.select(Product).filter_by(name='')).scalar_one_or_none()
         self.assertIsNone(added_product)
 
     def test_edit_product(self):
         # Agrega un producto para editar
-        product = Products(name='Producto Original', price=5, brand='Nueva Marca')
+        product = Product(name='Producto Original', price=5, brand='Nueva Marca')
         db.session.add(product)
         db.session.commit()
         product_id = product.id
@@ -79,7 +79,7 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)  # Verifica que la respuesta sea exitosa
 
         # Verifica que el producto se haya actualizado correctamente
-        updated_product = db.session.get(Products, product_id)
+        updated_product = db.session.get(Product, product_id)
         self.assertIsNotNone(updated_product)
         self.assertEqual(updated_product.name, 'Producto Actualizado')
         self.assertEqual(updated_product.price, 6)
@@ -90,7 +90,7 @@ class ProductTestCase(unittest.TestCase):
 
     def test_delete_product(self):
         # Agrega un producto para eliminar
-        product = Products(name='Producto a Eliminar', price=500, brand='Nueva Marca')
+        product = Product(name='Producto a Eliminar', price=500, brand='Nueva Marca')
         db.session.add(product)
         db.session.commit()
 
@@ -100,7 +100,7 @@ class ProductTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)  # Verifica que la respuesta sea exitosa
         
         # Verifica que el producto haya sido eliminado de la base de datos
-        deleted_product = db.session.get(Products, product_id)
+        deleted_product = db.session.get(Product, product_id)
         self.assertIsNone(deleted_product)
 
 if __name__ == '__main__':

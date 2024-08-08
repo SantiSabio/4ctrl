@@ -1,7 +1,7 @@
 from app import db
 
 
-class Brands(db.Model):
+class Brand(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     amount_art = db.Column(db.Integer, nullable=False)

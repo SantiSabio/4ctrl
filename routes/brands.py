@@ -1,7 +1,7 @@
 # routes/brands.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from models.Brand import Brands
-from models.Product import Products
+from models.Brand import Brand
+from models.Product import Product
 from app import db
 
 brands = Blueprint('brands', __name__)
@@ -19,7 +19,7 @@ brands = Blueprint('brands', __name__)
 
 @brands.route('/')
 def home():
-    brands = Brands.query.all()
+    brands = Brand.query.all()
     return render_template("brands.html", brands=brands)
 
 def check_brand(name, amount):
@@ -38,7 +38,7 @@ def check_brand(name, amount):
 
 @brands.route('/', methods=['GET'])
 def list_brands():
-    brands = Brands.query.all()
+    brands = Brand.query.all()
     return render_template('brands.html', brands=brands)
 
 @brands.route('/add-brand', methods=['GET', 'POST'])
@@ -47,7 +47,7 @@ def add_brand():
         name = request.form['name']
         amount = request.form['amount_art']
         if check_brand(name, amount):
-            new_brand = Brands(name=name, amount_art=amount)
+            new_brand = Brand(name=name, amount_art=amount)
             db.session.add(new_brand)
             db.session.commit()
             flash('Marcas agregada con éxito')
@@ -56,7 +56,7 @@ def add_brand():
 
 @brands.route('/edit-brand/<int:id>', methods=['GET', 'POST'])
 def edit_brand(id):
-    brand = Brands.query.get_or_404(id)
+    brand = Brand.query.get_or_404(id)
     if request.method == 'POST':
         name = request.form['name']
         amount_art = request.form['amount_art']
@@ -70,7 +70,7 @@ def edit_brand(id):
 
 @brands.route('/delete-brand/<int:id>', methods=['GET'])
 def delete_brand(id):
-    brand = Brands.query.get_or_404(id)
+    brand = Brand.query.get_or_404(id)
     db.session.delete(brand)
     db.session.commit()
     flash('Marcas eliminada con éxito')
@@ -78,6 +78,6 @@ def delete_brand(id):
 
 @brands.route('/products-list/<string:brand_name>', methods=['GET'])
 def list_products(brand_name):
-    brand = Brands.query.filter_by(name=brand_name).first_or_404()
-    products = Products.query.filter_by(brand=brand.name).all()
+    brand = Brand.query.filter_by(name=brand_name).first_or_404()
+    products = Product.query.filter_by(brand=brand.name).all()
     return render_template('product_list.html', brand=brand, products=products)
