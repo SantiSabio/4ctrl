@@ -1,24 +1,49 @@
 # Crear env
 
-python3 -m venv env
+python3 -m venv .venv
 
-# activar env
+# Activar env
 
-source env/bin/activate
+source .venv/bin/activate
 
-# instalar requirements
+# Instalar requirements
 
 pip install -r requirements.txt
 
-# para copiar requirements 'pip freeze > requirements.txt'
+# Copiar requirements: pip freeze > requirements.txt
 
-# migrate
+# Migrate
 
 flask db init
-flask db migrate -m "Create Products and Marca tables"
+flask db migrate -m "Create Productos and Marcas tables"
 flask db upgrade
 # python3 -m unittest tests.test_app
 # python3 -m unittest tests.test_db
 # python3 -m unittest tests.test_marcas
 # python3 -m unittest tests.test_products
 # python3 -m unittest tests.test_tables
+
+# En SQL
+
+CREATE TABLE productos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    precio FLOAT NOT NULL
+);
+
+CREATE TABLE marcas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    cant_art INT NOT NULL
+);
+
+-- Crear índice en la columna 'nombre' de la tabla 'marcas'
+
+CREATE INDEX idx_marcas_nombre ON marcas (nombre);
+
+-- Agregar columna 'marca' a la tabla 'productos' y definir la restricción de clave foránea
+
+ALTER TABLE productos
+ADD COLUMN marca VARCHAR(100),
+ADD CONSTRAINT fk_marca
+FOREIGN KEY (marca) REFERENCES marcas(nombre);
