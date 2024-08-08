@@ -1,5 +1,6 @@
 # routes/marcas.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import login_required, current_user
 from models.tables import Marcas,Productos
 from utils.db import db
 
@@ -22,12 +23,14 @@ def check_marca(nombre, cantidad):
 
 
 @marcas.route('/', methods=['GET'])
+@login_required
 def ver_marcas():
     
     marcas = Marcas.query.all()
     return render_template('marcas.html', marcas=marcas)
 
 @marcas.route('/add-marca', methods=['GET', 'POST'])
+@login_required
 def add_marca():
     if request.method == 'POST':
         nombre = request.form['nombre']
@@ -41,6 +44,7 @@ def add_marca():
     return render_template('add_marca.html')
 
 @marcas.route('/edit-marca/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_marca(id):
     marca = Marcas.query.get_or_404(id)
     if request.method == 'POST':
@@ -55,6 +59,7 @@ def edit_marca(id):
     return render_template('edit_marca.html', marca=marca)
 
 @marcas.route('/delete-marca/<int:id>', methods=['GET'])
+@login_required
 def delete_marca(id):
     marca = Marcas.query.get_or_404(id)
     db.session.delete(marca)
@@ -64,6 +69,7 @@ def delete_marca(id):
 
 
 @marcas.route('/lista-de-productos/<string:marca_nombre>', methods=['GET'])
+@login_required
 def listar_productos(marca_nombre):
     # Fetch the brand by name
     marcap = Marcas.query.filter_by(nombre=marca_nombre).first_or_404()  # Use filter_by for name

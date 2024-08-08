@@ -42,9 +42,11 @@ def register():
 @auth.route('/logout')
 @login_required
 def logout():
+    print(f'Logging out user: {current_user.username}')
     logout_user()
     flash('Has cerrado sesión.', 'info')
     return redirect(url_for('auth.login'))
+
 
 @login_manager.user_loader
 def load_user(user_id):
