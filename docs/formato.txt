@@ -1,0 +1,21 @@
+myproject/
+├── app.py
+├── index.py
+├── migrations/
+├── config/
+│   ├── config.py
+├── models/
+│   ├── tables.py
+├── routes/
+│   ├── products.py
+│   └── marcas.py
+├── utils/
+│   └── db.py
+└── templates/
+    ├── login.html
+    ├── index.html
+    ├── marcas.html
+    ├── edit-product.html
+    ├── add_marca.html
+    ├── edit-marca.html
+    └── lista-de-productos.html

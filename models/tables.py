@@ -1,3 +1,4 @@
+# models/tables.py
 from utils.db import db  
 
 class Productos(db.Model):

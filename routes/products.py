@@ -1,5 +1,7 @@
+# routes/products.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
-from models.tables import Productos,Marcas
+from flask_login import login_required, current_user
+from models.tables import Productos, Marcas
 from app import db
 
 products = Blueprint('products', __name__)
@@ -9,7 +11,6 @@ def get_marcas():
     query = request.args.get('q', '')
     marcas = Marcas.query.filter(Marcas.nombre.ilike(f'%{query}%')).all()
     return jsonify([{'nombre': marca.nombre} for marca in marcas])
-
 
 def check(nombre, marca, precio):
     if not isinstance(nombre, str) or not nombre.strip():
@@ -31,7 +32,6 @@ def check(nombre, marca, precio):
 
     return True
 
-
 @products.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -43,12 +43,14 @@ def login():
     return render_template("login.html")
 
 @products.route('/home')
+@login_required
 def home():
+    print(f'Current User: {current_user.username}')
     productos = Productos.query.all()
     return render_template("index.html", productos=productos)
 
-
 @products.route('/add_products', methods=['GET', 'POST'])
+@login_required
 def add_product():
     if request.method == 'POST':
         nombre = request.form['nombre']
@@ -77,6 +79,7 @@ def add_product():
     return render_template('index.html', marcas=marcas)
 
 @products.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_product(id):
     product = Productos.query.get_or_404(id)
     if request.method == 'POST':
@@ -88,7 +91,6 @@ def edit_product(id):
         if not marca_existe:
             flash('La marca seleccionada no existe')
             return redirect(url_for('products.home'))
-
 
         if check(nombre, marca, precio):
             product.nombre = nombre
@@ -103,6 +105,7 @@ def edit_product(id):
     return render_template('edit-product.html', product=product)
 
 @products.route('/delete/<int:id>', methods=['GET'])
+@login_required
 def delete_product(id):
     product = Productos.query.get_or_404(id)
     db.session.delete(product)
