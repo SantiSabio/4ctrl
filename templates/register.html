@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Iniciar Sesión</title>
+    <title>Registrarse</title>
     <style>
         /* estilo para agregar despues */
     </style>
@@ -15,12 +15,12 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <form action="{{ url_for('auth.login') }}" method="POST">
+        <form action="{{ url_for('auth.register') }}" method="POST">
             <input type="text" name="username" placeholder="Nombre de Usuario" required>
             <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit">Iniciar Sesión</button>
+            <button type="submit">Registrarse</button>
         </form>
-        <a href="{{ url_for('auth.register') }}">Registrarse</a>
+        <a href="{{ url_for('auth.login') }}">Iniciar Sesión</a>
     </div>
 </body>
 </html>

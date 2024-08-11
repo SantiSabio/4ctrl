@@ -1,5 +1,6 @@
 # routes/brands.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import login_required, current_user
 from models.Brand import Brands
 from models.Product import Products
 from app import db
@@ -14,11 +15,13 @@ def check_brand(name):
     return True
 
 @brands.route('/', methods=['GET'])
+@login_required
 def home():
     brands = Brands.query.all()
     return render_template('brands.html', brands=brands)
 
 @brands.route('/add-brand', methods=['GET', 'POST'])
+@login_required
 def add_brand():
     if request.method == 'POST':
         name = request.form['name']
@@ -32,6 +35,7 @@ def add_brand():
     return render_template('add_brand.html')
 
 @brands.route('/delete-brand/<int:id>', methods=['GET'])
+@login_required
 def delete_brand(id):
     brand = Brands.query.get_or_404(id)
     db.session.delete(brand)
@@ -40,6 +44,7 @@ def delete_brand(id):
     return redirect(url_for('brands.home'))
 
 @brands.route('/products-list/<string:brand_name>', methods=['GET'])
+@login_required
 def list_products(brand_name):
     brand = Brands.query.filter_by(name=brand_name).first_or_404()
     products = Products.query.filter_by(brand=brand.name).all()

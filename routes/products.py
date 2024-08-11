@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask_login import login_required, current_user
 from models.Product import Products
 from models.Brand import Brands
 from app import db
@@ -7,12 +8,14 @@ products = Blueprint('products', __name__)
 
 
 @products.route('/')
+@login_required
 def home():
     products = Products.query.all()
     return render_template("products.html", products=products)
 
 
 @products.route('/get_brands', methods=['GET'])
+@login_required
 def get_brands():
     query = request.args.get('q', '')
     brands = Brands.query.filter(Brands.nombre.ilike(f'%{query}%')).all()
@@ -39,6 +42,7 @@ def check(name, brand, price):
     return True
 
 @products.route('/add_products', methods=['GET', 'POST'])
+@login_required
 def add_product():
     if request.method == 'POST':
         name = request.form['name']
@@ -67,6 +71,7 @@ def add_product():
     return render_template('products.html', marcas=brands)
 
 @products.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_product(id):
     product = Products.query.get_or_404(id)
     if request.method == 'POST':
@@ -98,6 +103,7 @@ def edit_product(id):
 
 
 @products.route('/delete/<int:id>', methods=['GET'])
+@login_required
 def delete_product(id):
 
     product = Products.query.get_or_404(id)
