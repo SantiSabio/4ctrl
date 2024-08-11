@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Marcas</title>
     <style>
         body {
@@ -43,9 +45,38 @@
             transition: background-color 0.3s;
             display: block;
             margin: 20px auto;
+            text-align: center;
         }
         .button:hover {
             background-color: #45a049;
+        }
+        .table-button {
+            padding: 5px 10px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .table-button:hover {
+            background-color: #007B9A;
+        }
+        .delete-form {
+            display: inline-block;
+        }
+        .delete-form button {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .delete-form button:hover {
+            background-color: #e53935;
         }
     </style>
 </head>
@@ -53,7 +84,7 @@
     <div class="container">
         <h1>Lista de Marcas</h1>
         
-        <!-- Botón para redirigir a marcas.add_product -->
+        <!-- Botones para agregar marca e ir a productos -->
         <a href="{{ url_for('brands.add_brand') }}" class="button">Agregar Marca</a>
         <a href="{{ url_for('products.home') }}" class="button">Ir a productos</a>
 
@@ -71,9 +102,10 @@
                     <td>{{ brand.name }}</td>
                     <td>{{ brand.amount_art }}</td>
                     <td>
-                    <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="button">Listar Productos</a>
-                    <!-- Replace the delete link with a form -->
-                    <a href="{{ url_for('brands.delete_brand', id=brand.id) }}" class="button">Eliminar marca</a>
+                        <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="table-button">Listar Productos</a>
+                        <form action="{{ url_for('brands.delete_brand', id=brand.id) }}" method="post" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta marca?');">
+                            <button type="submit">Eliminar marca</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}
