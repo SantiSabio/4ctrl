@@ -6,7 +6,7 @@ from utils.db import db
 
 
 class MarcasTestCase(unittest.TestCase):
-#Levantamos una app y  creamos DB y sus tablas
+#Levantamos una app y creamos DB y sus tablas
     def setUp(self):
         self.app = create_app()
         self.app.config['TESTING'] = True
@@ -39,7 +39,6 @@ class MarcasTestCase(unittest.TestCase):
         # Eliminar la marca agregada para limpiar la base de datos
         db.session.delete(added_marca)
         db.session.commit()
-
 
 
     def test_add_marca_post_invalid(self):
