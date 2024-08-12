@@ -33,6 +33,17 @@ Se creará la carpeta `migrations` en el actual directorio.
 ### Ingresar consulta SQL
 
 ```sql
+
+-- Tabla 'users'
+
+CREATE TABLE users (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(80) NOT NULL UNIQUE,
+    password VARCHAR(255),
+    PRIMARY KEY (id)
+);
+
+
 -- Tabla 'products'
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
