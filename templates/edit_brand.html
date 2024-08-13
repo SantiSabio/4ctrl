@@ -34,9 +34,9 @@
     </style>
 </head>
 <body>
-    <form action="/edit_marca/{{ product.id }}" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre" value="{{ nombre|default(product.nombre) }}">
-        <input type="text" name="cant_art" placeholder="Cant_Art" value="{{ cant_art|default(product.marca) }}">
+    <form action="/edit_brand/{{ product.id }}" method="POST">
+        <input type="text" name="name" placeholder="Nombre" value="{{ nombre|default(product.name) }}">
+        <input type="text" name="amount_art" placeholder="Cant_Art" value="{{ cant_art|default(product.brand) }}">
         <button type="submit">Guardar</button>
     </form>
 </body>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Marcas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .table-button {
+            padding: 5px 10px;
+            background-color: #008CBA;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .table-button:hover {
+            background-color: #007B9A;
+        }
+        .delete-form {
+            display: inline-block;
+        }
+        .delete-form button {
+            background-color: #f44336;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .delete-form button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Marcas</h1>
+        
+        <!-- Botones para agregar marca e ir a productos -->
+        <a href="{{ url_for('brands.add_brand') }}" class="button">Agregar Marca</a>
+        <a href="{{ url_for('products.home') }}" class="button">Ir a productos</a>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad de Artículos</th>
+                    <th>Operaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for brand in brands %}
+                <tr>
+                    <td>{{ brand.name }}</td>
+                    <td>{{ brand.amount_art }}</td>
+                    <td>
+                        <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="table-button">Listar Productos</a>
+                        <form action="{{ url_for('brands.delete_brand', id=brand.id) }}" method="post" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta marca?');">
+                            <button type="submit">Eliminar marca</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

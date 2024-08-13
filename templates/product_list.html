@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Lista de Productos por Marca: {{ marca.nombre }}</h1>
+        <h1>Lista de Productos por Marca: {{ brand.name }}</h1>
         <table>
             <thead>
                 <tr>
@@ -63,10 +63,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for producto in productos %}
+                {% for product in products %}
                     <tr>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.precio }}</td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

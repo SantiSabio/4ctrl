@@ -14,31 +14,25 @@ class DbTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-    #def tearDown(self):
-    # Limpiar la base de datos después de cada prueba
-    #   db.session.remove()
-    #  db.drop_all()
-    # self.app_context.pop()
-
-    def test_table_marcas(self):
+    def test_table_brands(self):
         inspector = db.inspect(db.engine)
         tables = inspector.get_table_names()
-        self.assertIn('marcas', tables, "La tabla 'marca' no fue creada")
+        self.assertIn('brands', tables, "La tabla 'brands' no fue creada")
 
-        columns = inspector.get_columns('marcas')
-        expected_columns = ['id', 'nombre']
+        columns = inspector.get_columns('brands')
+        expected_columns = ['id', 'name','amount_art']
         name_columns = [col['name'] for col in columns]  # Lista por comprensión para obtener las columnas de la tabla
         
         for col in expected_columns:
             self.assertIn(col, name_columns, f'El campo {col} no existe')
 
-    def test_table_productos(self):
+    def test_table_products(self):
         inspector = db.inspect(db.engine)
         tables = inspector.get_table_names()
-        self.assertIn('productos', tables, "La tabla 'productos' no fue creada")
+        self.assertIn('products', tables, "La tabla 'products' no fue creada")
 
-        columns = inspector.get_columns('productos')
-        expected_columns = ['id', 'nombre', 'precio', 'marca']
+        columns = inspector.get_columns('products')
+        expected_columns = ['id', 'name', 'price', 'brand']
         name_columns = [col['name'] for col in columns]  # Lista por comprensión para obtener las columnas de la tabla
         
         for col in expected_columns:

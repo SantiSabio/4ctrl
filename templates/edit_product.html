@@ -34,12 +34,11 @@
     </style>
 </head>
 <body>
-    <form action="/edit/{{ product.id }}" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre" value="{{ nombre|default(product.nombre) }}">
-        <input type="text" name="marca" placeholder="Marca" value="{{ marca|default(product.marca) }}">
-        <input type="text" name="precio" placeholder="Precio" value="{{ precio|default(product.precio) }}">
+    <form action="{{ url_for('products.edit_product', id=product.id) }}" method="POST">
+        <input type="text" name="name" placeholder="Nombre" value="{{ name|default(product.name) }}">
+        <input type="text" name="brand" placeholder="Marca" value="{{ brand|default(product.brand) }}">
+        <input type="text" name="price" placeholder="Precio" value="{{ price|default(product.price) }}">
         <button type="submit">Guardar</button>
     </form>
 </body>
 </html>
-

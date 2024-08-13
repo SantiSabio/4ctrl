@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 20px auto;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #a04419;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .flash-message {
+            color: red;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <p class="flash-message">{{ message }}</p>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form id="product-form" action="{{ url_for('products.add_product') }}" method="POST">
+            <input type="text" name="name" placeholder="Nombre" required>
+            <input type="text" name="brand" id="brand" list="marcas" placeholder="Marca" required>
+            <datalist id="marcas">
+                <!-- Aquí se cargarán las opciones de marca desde la base de datos -->
+            </datalist>
+            <input type="text" name="price" placeholder="Precio" required>
+            <button type="submit">Agregar Producto</button>
+        </form>
+
+        <form action="{{ url_for('brands.home') }}" method="GET">
+            <button type="submit">Ver Marcas</button>
+        </form>
+
+        <!-- Lista de productos -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>
+                        <a href="{{ url_for('products.edit_product', id=product.id) }}">Editar</a>
+                        <a href="{{ url_for('products.delete_product', id=product.id) }}">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    // Obtener el campo de marca
+    const brandInput = document.getElementById('brand');
+    const marcasDatalist = document.getElementById('marcas');
+
+    // Agregar evento de entrada al campo de marca
+    brandInput.addEventListener('input', function() {
+        // Obtener el valor actual del campo de marca
+        const brandValue = this.value;
+
+        // Realizar una solicitud AJAX para obtener las marcas que coinciden
+        fetch('/get_brands?q=' + encodeURIComponent(brandValue))
+            .then(response => response.json())
+            .then(data => {
+                // Limpiar las opciones anteriores
+                marcasDatalist.innerHTML = '';
+
+                // Agregar las nuevas opciones
+                data.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand.nombre;
+                    marcasDatalist.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener las marcas:', error);
+            });
+    });
+    </script>
+</body>
+</html>
