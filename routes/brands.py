@@ -8,13 +8,14 @@ from app import db
 brands = Blueprint('brands', __name__)
 
 
+#Chequea si el tipo de dato es correcto para la posterior anexion a base de datos (DontRepeatYourself)
 def check_brand(name):
     if not isinstance(name, str) or not name.strip():
         flash('El nombre de la marca debe ser un string no vacío', 'error')
         return False
     return True
 
-@brands.route('/', methods=['GET'])
+@brands.route('/', methods=['GET']) #Despliegue del home de brands
 @login_required
 def home():
     brands = Brands.query.all()
@@ -22,13 +23,12 @@ def home():
 
 @brands.route('/add-brand', methods=['GET', 'POST'])
 @login_required
-def add_brand():
+def add_brand():   #obtenemos los datos para agregar marca
     if request.method == 'POST':
         name = request.form['name']
-        amount = 0
-        if check_brand(name):
+        if check_brand(name):  #Chequeamos que el dato sea correcto
             new_brand = Brands(name=name)
-            db.session.add(new_brand)
+            db.session.add(new_brand)       #Si lo es lo agregamosa la  Database
             db.session.commit()
             flash('Marcas agregada con éxito')
             return redirect(url_for('brands.home'))
@@ -36,16 +36,17 @@ def add_brand():
 
 @brands.route('/delete-brand/<int:id>', methods=['GET'])
 @login_required
-def delete_brand(id):
+def delete_brand(id):   #Obtenemos el id de la marca a eliminar
     brand = Brands.query.get_or_404(id)
-    db.session.delete(brand)
+    db.session.delete(brand)      #Eliminamos la instancia mediante el id 
     db.session.commit()
     flash('Marcas eliminada con éxito')
     return redirect(url_for('brands.home'))
 
+
 @brands.route('/products-list/<string:brand_name>', methods=['GET'])
 @login_required
-def list_products(brand_name):
-    brand = Brands.query.filter_by(name=brand_name).first_or_404()
-    products = Products.query.filter_by(brand=brand.name).all()
-    return render_template('product_list.html', brand=brand, products=products)
+def list_products(brand_name):  #Obtenemos el id de la marca a eliminar
+    brand = Brands.query.filter_by(name=brand_name).first_or_404()  #obtenemos la marca desde la tabla que coincida con la que buscamos eliminar
+    products = Products.query.filter_by(brand=brand.name).all() #obtenemos todos los productos cuyo campo marca sea igual a brand.name es decir que pertenezcan a  la misma
+    return render_template('product_list.html', brand=brand, products=products)  #redirigimos a un template donde se listan los products por marca

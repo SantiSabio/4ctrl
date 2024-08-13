@@ -8,29 +8,29 @@ from utils.auth import login_manager  # Importa login_manager
 auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
-def login():
+def login():    #obtenemos los datos desde el formulario
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
+        user = User.query.filter_by(username=username).first()  #buscamos si el usuario se encuentra en la tabla
+        if user and user.check_password(password):   #chequeamos que el usuario y contraseña sea correcto y le damos acceso
             login_user(user)
             return redirect(url_for('products.home'))
         else:
-            flash('Invalid username or password. Please try again.', 'danger')
+            flash('Usuario o Contraseña errónea, Por favor intente nuevamente', 'danger') #Caso contrario no le permite el acceso al usuario
     return render_template('login.html')
 
 
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
+    if request.method == 'POST': #tomamos los datos del html
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first() #chequeamos que el nombre no este registrado
         if user:
             flash('El nombre de usuario ya existe.', 'danger')
-        else:
+        else: #si el nombre no esta registrado aceptamos sus credenciales y lo agregamos a la Database
             new_user = User(username=username)
             new_user.set_password(password)
             db.session.add(new_user)
@@ -41,7 +41,7 @@ def register():
 
 @auth.route('/logout')
 @login_required
-def logout():
+def logout(): #Cerramos la sesion del usuario y redirigimos al inicio
     print(f'Logging out user: {current_user.username}')
     logout_user()
     flash('Has cerrado sesión.', 'info')
