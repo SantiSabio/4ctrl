@@ -103,7 +103,7 @@
                     <td>{{ brand.amount_art }}</td>
                     <td>
                         <a href="{{ url_for('brands.list_products', brand_name=brand.name) }}" class="table-button">Listar Productos</a>
-                        <form action="{{ url_for('brands.delete_brand', id=brand.id) }}" method="post" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta marca?');">
+                        <form action="{{ url_for('brands.delete_brand', id=brand.id) }}" method="POST" class="delete-form" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta marca?');">
                             <button type="submit">Eliminar marca</button>
                         </form>
                     </td>

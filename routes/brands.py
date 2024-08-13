@@ -1,6 +1,6 @@
 # routes/brands.py
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_required, current_user
+from flask_login import login_required
 from models.Brand import Brands
 from models.Product import Products
 from app import db
@@ -34,13 +34,17 @@ def add_brand():   #obtenemos los datos para agregar marca
             return redirect(url_for('brands.home'))
     return render_template('add_brand.html')
 
-@brands.route('/delete-brand/<int:id>', methods=['GET'])
+@brands.route('/delete-brand/<int:id>', methods=['POST'])
 @login_required
 def delete_brand(id):   #Obtenemos el id de la marca a eliminar
     brand = Brands.query.get_or_404(id)
-    db.session.delete(brand)      #Eliminamos la instancia mediante el id 
-    db.session.commit()
-    flash('Marcas eliminada con éxito')
+
+    if not brand.amount_art==0:
+        flash('La cantidad de articulos debe ser cero', 'error')
+    else:
+        db.session.delete(brand)      #Eliminamos la instancia mediante el id 
+        db.session.commit()
+        flash('Marcas eliminada con éxito')
     return redirect(url_for('brands.home'))
 
 
