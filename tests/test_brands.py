@@ -1,71 +1,76 @@
 import unittest
-from app import create_app
+from app import create_app, db
 from models.Product import Products
 from models.Brand import Brands
-from utils.db import db
-from models.user import User
 
 class MarcasTestCase(unittest.TestCase):
-    # Levantamos una app y creamos DB y sus tablas
+   
+    # Se ejecuta antes de cada prueba
     def setUp(self):
-        self.app = create_app()
-        self.app.config['TESTING'] = True
+        self.app = create_app()  # Crea una instancia de la aplicación Flask
+        self.app.config['TESTING'] = True  # Activa el modo de pruebas
         self.app.config['LOGIN_DISABLED'] = True  # Desactiva la autenticación
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        
-        db.create_all()
-    
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Usa una base de datos en memoria para pruebas
+        self.client = self.app.test_client()  # Crea un cliente de prueba para hacer solicitudes HTTP
+        self.app_context = self.app.app_context()  # Crea un contexto de aplicación
+        self.app_context.push()  # Empuja el contexto de la aplicación
+        db.create_all()  # Crea todas las tablas en la base de datos en memoria
+
+
     def test_see_brands(self):
-        response = self.client.get('/')  
-        print(response)
+        # Verifica que se devuelva la página principal
+        response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
 
-    def test_add_marca_post_valid(self):
+    def test_add_brand_post_valid(self):
         # Enviar solicitud POST para agregar una nueva marca
-        response = self.client.post('/add-brand', data={
-            'name': 'Nueva Marca'}, follow_redirects=True)
+        response = self.client.post(
+            '/add-brand',
+            data={'name': 'Nueva Marca'},
+            follow_redirects=True
+            )
         
-        # Verifica que la respuesta sea 200 OK
+        # Verifica que la respuesta sea 200 (ok)
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca se haya agregado correctamente a la base de datos
-        added_marca = db.session.execute(db.select(Brands).filter_by(name='Nueva Marca')).scalar_one_or_none()  # Asegúrate de que la consulta sea correcta
+        added_marca = db.session.execute(db.select(Brands).filter_by(name='Nueva Marca')).scalar_one_or_none()  # Asegura que la consulta sea correcta
         self.assertIsNotNone(added_marca)
-        self.assertEqual(added_marca.amount_art, 0)  # Comparar con entero ya que 'amount_art' es un número que  por defecto es 0
-        self.assertEqual(added_marca.name, 'Nueva Marca')  # Verifica el name correctamente
+        self.assertEqual(added_marca.amount_art, 0)  # Comparar con entero ya que 'amount_art' es un número que por defecto es 0
+        self.assertEqual(added_marca.name, 'Nueva Marca')  # Verifica el nombre
         
-        # Eliminar la marca agregada para limpiar la base de datos
+        # Limpia la base de datos
         db.session.delete(added_marca)
         db.session.commit()
 
 
-    def test_add_marca_post_invalid(self):
-        response = self.client.post('/add-brand', data={
-            'name': '',
-        }, follow_redirects=True)
+    def test_add_brand_post_invalid(self):
+        response = self.client.post(
+            '/add-brand',
+            data={'name': ''},
+            follow_redirects=True
+            )
         self.assertEqual(response.status_code, 200)
         
 
-    def test_delete_marca(self):
-        marca = Brands(name='Marcas a Eliminar')
-        db.session.add(marca)
+    def test_delete_brand(self):
+        # Datos del test
+        brand = Brands(name='Marca a Eliminar')
+        db.session.add(brand)
         db.session.commit()
 
-        marca_id = marca.id
-        response = self.client.post(f'/delete-brand/{marca_id}', follow_redirects=True)
+        brand_id = brand.id
+        response = self.client.post(f'/delete-brand/{brand_id}', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca ya no existe en la base de datos
-        deleted_marca = db.session.execute(db.select(Brands).filter_by(id=marca_id)).scalar_one_or_none()
+        deleted_marca = db.session.execute(db.select(Brands).filter_by(id=brand_id)).scalar_one_or_none()
         self.assertIsNone(deleted_marca)
 
 
     def test_list_products(self):
-        # Setup test data
+        # Datos del test
         marca1 = Brands(name='Marca de prueba')
         db.session.add(marca1)
         db.session.commit()
@@ -76,21 +81,21 @@ class MarcasTestCase(unittest.TestCase):
         db.session.add(producto2)
         db.session.commit()
 
-        # Make the request
+        # Pedido
         response = self.client.get(f'/products-list/{marca1.name}', follow_redirects=True)
 
-        # Assert the response
+        # Respuesta
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Lista de Productos por Marca', response.data)
-        self.assertIn(b'Prod1', response.data)  # Check for the presence of product names
+        self.assertIn(b'Prod1', response.data)  # Verifica la presencia de nombres de productos
         self.assertIn(b'Prod2', response.data)
 
-        # Clean up the database
+        # Limpia la BD
         db.session.delete(producto1)
         db.session.delete(producto2)
         db.session.commit()
         db.session.delete(marca1)
-        db.session.commit()  # Commit the deletion of the brand
+        db.session.commit()
 
 
 if __name__ == '__main__':

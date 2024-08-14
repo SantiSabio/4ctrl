@@ -1,18 +1,19 @@
 import unittest
-from flask import current_app
-from app import create_app
-from utils.db import db
+from app import create_app, db
 
 class DbTestCase(unittest.TestCase):
+
+    # Se ejecuta antes de cada prueba
     def setUp(self):
-        # Crear una instancia de la aplicación y establecer la configuración para pruebas
-        self.app = create_app()
-        self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
+        self.app = create_app()  # Crea una instancia de la aplicación Flask
+        self.app.config['TESTING'] = True  # Activa el modo de pruebas
+        self.app.config['LOGIN_DISABLED'] = True  # Desactiva la autenticación
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Usa una base de datos en memoria para pruebas
+        self.client = self.app.test_client()  # Crea un cliente de prueba para hacer solicitudes HTTP
+        self.app_context = self.app.app_context()  # Crea un contexto de aplicación
+        self.app_context.push()  # Empuja el contexto de la aplicación
+        db.create_all()  # Crea todas las tablas en la base de datos en memoria
+
 
     def test_table_brands(self):
         inspector = db.inspect(db.engine)
@@ -25,6 +26,7 @@ class DbTestCase(unittest.TestCase):
         
         for col in expected_columns:
             self.assertIn(col, name_columns, f'El campo {col} no existe')
+
 
     def test_table_products(self):
         inspector = db.inspect(db.engine)

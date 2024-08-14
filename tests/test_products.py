@@ -1,10 +1,10 @@
 import unittest
-from app import create_app
+from app import create_app, db
 from models.Product import Products
 from models.Brand import Brands
-from utils.db import db
 
 class ProductTestCase(unittest.TestCase):
+
     # Se ejecuta antes de cada prueba
     def setUp(self):
         self.app = create_app()  # Crea una instancia de la aplicación Flask
@@ -21,9 +21,11 @@ class ProductTestCase(unittest.TestCase):
         response = self.client.get('/')  # Realiza una solicitud GET a la ruta raíz
         self.assertEqual(response.status_code, 200)  # Verifica que el código de estado de la respuesta sea 200 (OK)
 
+
     def test_add_product_get(self):
         response = self.client.get('/products/add_products')  # Realiza una solicitud GET a la ruta para agregar productos
         self.assertEqual(response.status_code, 200)  # Verifica que el código de estado de la respuesta sea 200 (OK)
+
 
     def test_add_product_post_valid(self):
         # Agrega una marca válida a la base de datos
@@ -32,11 +34,14 @@ class ProductTestCase(unittest.TestCase):
         db.session.commit()
         
         # Realiza una solicitud POST para agregar un producto válido
-        response = self.client.post('/products/add_products', data={
-            'name': 'Nuevo Producto',
-            'price': 5.00,
-            'brand': 'Nueva Marca'
-        }, follow_redirects=True)
+        response = self.client.post(
+            '/products/add_products',
+            data={
+                'name': 'Nuevo Producto',
+                'price': 5.00,
+                'brand': 'Nueva Marca'
+                },
+            follow_redirects=True)
         self.assertEqual(response.status_code, 200)  # Verifica que la respuesta sea exitosa
 
         # Verifica que el producto se haya agregado a la base de datos
@@ -48,6 +53,7 @@ class ProductTestCase(unittest.TestCase):
         # Elimina el producto después de la prueba
         db.session.delete(added_product)
         db.session.commit()
+
 
     def test_add_product_post_invalid(self):
         # Realiza una solicitud POST con datos inválidos
@@ -62,6 +68,7 @@ class ProductTestCase(unittest.TestCase):
         # Verifica que el producto no se haya agregado a la base de datos
         added_product = db.session.execute(db.select(Products).filter_by(name='')).scalar_one_or_none()
         self.assertIsNone(added_product)
+
 
     def test_edit_product(self):
         # Agrega un producto para editar
@@ -83,6 +90,7 @@ class ProductTestCase(unittest.TestCase):
         # Elimina el producto después de la prueba
         db.session.delete(updated_product)
         db.session.commit()
+
 
     def test_delete_product(self):
         # Agrega un producto para eliminar
