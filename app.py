@@ -3,7 +3,7 @@ from flask import Flask
 from utils.db import db
 from flask_migrate import Migrate
 from utils.auth import login_manager
-from datetime import timedelta  
+from datetime import timedelta
 
 def create_app():
     app = Flask(__name__)

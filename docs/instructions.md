@@ -1,4 +1,4 @@
-# Instalación
+# Instrucciones de Instalación
 
 ### Creación del entotrno virtual (`env`)
 
