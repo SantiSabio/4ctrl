@@ -3,22 +3,24 @@ from app import create_app
 from models.Product import Products
 from models.Brand import Brands
 from utils.db import db
-
+from models.user import User
 
 class MarcasTestCase(unittest.TestCase):
-#Levantamos una app y creamos DB y sus tablas
+    # Levantamos una app y creamos DB y sus tablas
     def setUp(self):
         self.app = create_app()
         self.app.config['TESTING'] = True
+        self.app.config['LOGIN_DISABLED'] = True  # Desactiva la autenticación
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
+        
         db.create_all()
-
-
+    
     def test_see_brands(self):
         response = self.client.get('/')  
+        print(response)
         self.assertEqual(response.status_code, 200)
 
 
@@ -54,7 +56,7 @@ class MarcasTestCase(unittest.TestCase):
         db.session.commit()
 
         marca_id = marca.id
-        response = self.client.get(f'/delete-brand/{marca_id}', follow_redirects=True)
+        response = self.client.post(f'/delete-brand/{marca_id}', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
         # Verifica que la marca ya no existe en la base de datos
